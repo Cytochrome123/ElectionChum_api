@@ -1,0 +1,1 @@
+exports.factory = require('./factory');

@@ -1,0 +1,100 @@
+const passport = require('passport');
+
+const { queries } = require('../db');
+const { factory } = require('../config');
+const { User } = require('../model');
+
+const auth = {
+    register: async (req, userDetails) => {
+        try {
+            let condition = { email: userDetails.email };
+            let options = { lean: true };
+
+            let exists = await queries.findOne(User, condition, options);
+
+            if(!exists) {
+                userDetails.password = factory.generateHashPassword(userDetails.password);
+                userDetails['passport'] = req.file.originalname;
+                userDetails['passportPath'] = req.file.path;
+
+                await queries.create(User, userDetails);
+
+                return {
+                    status: 200,
+                    data: { msg: 'Check back in afew days to confirm if you\'re eligible to vote or not. Thanks'}
+                }
+            }
+            // throw new Error('Account already exists');
+            return {
+                status: 400,
+                data: { msg: 'Account already exists'}
+            }
+        } catch (err) {
+            throw err;
+            // return {
+            //     status: 400,
+            //     data: { msg: 'Account already exists'}
+            // }
+        }
+    },
+
+    login: async (req, res, next) => {
+        try {
+            passport.authenticate('local', (err, user, info) => {
+                if(err) throw err;
+
+                if (!user) return res.status(400).json({ msg: info.msg });
+
+                req.login(user, (err) => {
+                    if (err) throw err;
+                    
+                    res.status(200).json(user)
+                });
+
+            })(req, res, next)
+        } catch (err) {
+            res.status(400).json({ msg: err.message });
+            // throw err;
+        }
+    },
+
+    resetPassword: async (payload) => {
+        try {
+            let condition = { email: payload.email };
+            let projection = {};
+            let options = { lean: true };
+
+            let user = await queries.findOne( User, condition, projection, options );
+
+            if(user) {
+                payload.password = factory.generateHashPassword(userDetails.password);
+
+                let update = { password: payload.password };
+                options = { lean: true, new: true };
+
+                let newPassword = await queries.findOneAndUpdate( User, condition, update, options );
+                if(newPassword) {
+                    return {
+                        status: 200,
+                        data: { msg: 'Your password has been updated successfully' }
+                    }
+                }
+                return {
+                    status: 400,
+                    data: { msg: 'Eeror pls try back later' }
+                }
+            }
+            return {
+                status: 400,
+                data: { msg: 'This email doesn\'nt exists' }
+            }
+        } catch (error) {
+            return {
+                status: 400,
+                data: { msg: error.message }
+            }
+        }
+    }
+};
+
+module.exports = auth;
