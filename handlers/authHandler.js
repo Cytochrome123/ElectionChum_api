@@ -7,7 +7,7 @@ const { cloudinary } = require('../config/cloudinary');
 
 
 const auth = {
-    register: async (req, userDetails, next) => {
+    register: async (req, userDetails) => {
     try {
         let condition = { email: userDetails.email };
         let options = { lean: true };
@@ -20,25 +20,18 @@ const auth = {
             userDetails.password = factory.generateHashPassword(userDetails.password);
             // userDetails['passport'] = req.file.originalname;
             // userDetails['passportPath'] = req.file.path;
-
-            try {
-
-                const passport = await cloudinary.uploader.upload(req.file.path, { folder: 'passport' });
-    
-                userDetails['passport'] = passport.public_id;
-                userDetails['passportPath'] = passport.secure_url;
-    
-                await queries.create(User, userDetails);
-    
-                return {
-                    status: 200,
-                    data: { msg: 'Check back in afew days to confirm if you\'re eligible to vote or not. Thanks'}
-                }
-            } catch(e) {
-                // throw e
-                next(e)
-            }
             
+            const passport = await cloudinary.uploader.upload(req.file.path, { folder: 'passport' });
+
+            userDetails['passport'] = passport.public_id;
+            userDetails['passportPath'] = passport.secure_url;
+
+            await queries.create(User, userDetails);
+
+            return {
+                status: 200,
+                data: { msg: 'Check back in afew days to confirm if you\'re eligible to vote or not. Thanks'}
+            }
         } else {
 
             // throw new Error('Account already exists');
@@ -48,12 +41,11 @@ const auth = {
             }
         }
     } catch (err) {
-        // throw err;
+        throw err;
         // return {
         //     status: 400,
         //     data: { msg: err.message }
         // }
-        next(err)
     }
 },
 
