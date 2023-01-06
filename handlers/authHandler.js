@@ -7,7 +7,7 @@ const { cloudinary } = require('../config/cloudinary');
 
 
 const auth = {
-    register: async (req, userDetails) => {
+    register: async (req, userDetails, next) => {
     try {
         let condition = { email: userDetails.email };
         let options = { lean: true };
@@ -35,7 +35,8 @@ const auth = {
                     data: { msg: 'Check back in afew days to confirm if you\'re eligible to vote or not. Thanks'}
                 }
             } catch(e) {
-                throw e
+                // throw e
+                next(e)
             }
             
         } else {
@@ -47,11 +48,12 @@ const auth = {
             }
         }
     } catch (err) {
-        throw err;
+        // throw err;
         // return {
         //     status: 400,
         //     data: { msg: err.message }
         // }
+        next(err)
     }
 },
 

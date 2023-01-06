@@ -1,11 +1,11 @@
 const { authHandler } = require('../handlers');
 
 const auth = {
-    register: async (req, res) => {
+    register: async (req, res, next) => {
         try {
             const userDetails = req.body;
             
-            let response = await authHandler.register(req, userDetails);
+            let response = await authHandler.register(req, userDetails, next);
 
             res.status(response.status).json(response.data);
             
