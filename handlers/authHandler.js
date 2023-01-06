@@ -14,6 +14,7 @@ const auth = {
 
             let exists = await queries.findOne(User, condition, options);
             console.log(req.file)
+            console.log(req.file.path)
             if(!exists) {
                 userDetails.password = factory.generateHashPassword(userDetails.password);
                 // userDetails['passport'] = req.file.originalname;
