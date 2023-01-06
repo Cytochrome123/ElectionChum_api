@@ -3,6 +3,8 @@ const passport = require('passport');
 const { queries } = require('../db');
 const { factory } = require('../config');
 const { User } = require('../model');
+const { cloudinary } = require('../config/cloudinary');
+
 
 const auth = {
     register: async (req, userDetails) => {
@@ -11,11 +13,16 @@ const auth = {
             let options = { lean: true };
 
             let exists = await queries.findOne(User, condition, options);
-
+            console.log(req.file)
             if(!exists) {
                 userDetails.password = factory.generateHashPassword(userDetails.password);
-                userDetails['passport'] = req.file.originalname;
-                userDetails['passportPath'] = req.file.path;
+                // userDetails['passport'] = req.file.originalname;
+                // userDetails['passportPath'] = req.file.path;
+                
+                const passport = await cloudinary.uploader.upload(req.file.path, { folder: 'passport' });
+
+                userDetails['passport'] = passport.public_id;
+                userDetails['passportPath'] = passport.secure_url;
 
                 await queries.create(User, userDetails);
 
@@ -23,20 +30,55 @@ const auth = {
                     status: 200,
                     data: { msg: 'Check back in afew days to confirm if you\'re eligible to vote or not. Thanks'}
                 }
-            }
-            // throw new Error('Account already exists');
-            return {
-                status: 400,
-                data: { msg: 'Account already exists'}
+            } else {
+
+                // throw new Error('Account already exists');
+                return {
+                    status: 400,
+                    data: { msg: 'Account already exists'}
+                }
             }
         } catch (err) {
-            throw err;
-            // return {
-            //     status: 400,
-            //     data: { msg: 'Account already exists'}
-            // }
+            // throw err;
+            return {
+                status: 400,
+                data: { msg: err.message }
+            }
         }
     },
+
+    // register: async (req, userDetails) => {
+    //     try {
+    //         let condition = { email: userDetails.email };
+    //         let options = { lean: true };
+
+    //         let exists = await queries.findOne(User, condition, options);
+
+    //         if(!exists) {
+    //             userDetails.password = factory.generateHashPassword(userDetails.password);
+    //             userDetails['passport'] = req.file.originalname;
+    //             userDetails['passportPath'] = req.file.path;
+
+    //             await queries.create(User, userDetails);
+
+    //             return {
+    //                 status: 200,
+    //                 data: { msg: 'Check back in afew days to confirm if you\'re eligible to vote or not. Thanks'}
+    //             }
+    //         }
+    //         // throw new Error('Account already exists');
+    //         return {
+    //             status: 400,
+    //             data: { msg: 'Account already exists'}
+    //         }
+    //     } catch (err) {
+    //         throw err;
+    //         // return {
+    //         //     status: 400,
+    //         //     data: { msg: 'Account already exists'}
+    //         // }
+    //     }
+    // },
 
     login: async (req, res, next) => {
         try {
@@ -47,8 +89,21 @@ const auth = {
 
                 req.login(user, (err) => {
                     if (err) throw err;
+                    const userObj = {
+                        firstName: user.firstName,
+                        lastName: user.lastName,
+                        email: user.email,
+                        phoneNumber: user.phoneNumber,
+                        ['State of Origin']: user['State of Origin'],
+                        LGA: user.LGA,
+                        residence: user.residence,
+                        votersID: user.votersID,
+                        userType: user.userType,
+                        passport: user.passport,
+                        passportPath: user.passportPath,
+                    };
                     
-                    res.status(200).json(user)
+                    res.status(200).json(userObj)
                 });
 
             })(req, res, next)

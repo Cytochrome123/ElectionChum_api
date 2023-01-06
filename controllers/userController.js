@@ -23,6 +23,17 @@ const user = {
         } catch (err) {
             throw err;
         }
+    },
+
+    getPassport: async (req, res) => {
+        try {
+            const {id} = req.params;
+
+            const response = userHandler.getPassport(res, id);
+            return response;
+        } catch (error) {
+            throw error
+        }
     }
 }
 

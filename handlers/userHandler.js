@@ -1,6 +1,7 @@
 const { default: mongoose } = require("mongoose");
 const { queries } = require("../db");
-const { Vote } = require("../model");
+const { Vote, User } = require("../model");
+const { cloudinary } = require('../config/cloudinary');
 
 const user = {
     getDashboard: async (my_details) => {
@@ -77,7 +78,43 @@ const user = {
         } catch (err) {
             throw err;
         }
+    },
+
+    getPassport: async (res, id) => {
+        try {
+            // const condition = { id: mongoose.Types.ObjectId(id) };
+            // let projection = { id: 1, passport: 1, passportPath: 1 };
+            // let option = { lean: true };
+
+            // const passport = await queries.findOne( User, condition, projection, option );
+
+            // if(passport) {
+            //     const img = await cloudinary.api.resource(passport.passport);
+            //     console.log(img)
+            //     res.download(passport.passportPath);
+            // }
+            res.download('http://res.cloudinary.com/iceece/image/upload/v1672908699/passport/mnifb7zvxh3p6mfyqjus.png');
+        } catch (error) {
+            res.status(400).json(error.message)
+        }
     }
+    
+    // getPassport: async (res, id) => {
+    //     try {
+    //         const condition = { id: mongoose.Types.ObjectId(id) };
+    //         let projection = { id: 1, passport: 1, passportPath: 1 };
+    //         let option = { lean: true };
+
+    //         const passport = await queries.findOne( User, condition, projection, option );
+
+    //         if(passport) {
+    //             const x = `${__dirname}/${passport.passportPath}`;
+    //             res.download(x);
+    //         }
+    //     } catch (error) {
+    //         res.status(400).json(error.message)
+    //     }
+    // }
 };
 
 module.exports = user;
