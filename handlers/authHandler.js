@@ -14,23 +14,37 @@ const auth = {
 
             let exists = await queries.findOne(User, condition, options);
             console.log(req.file)
-            console.log(req.file.path)
+            // console.log(req.file.path)
+            console.log(userDetails.passport)
             if(!exists) {
                 userDetails.password = factory.generateHashPassword(userDetails.password);
                 // userDetails['passport'] = req.file.originalname;
                 // userDetails['passportPath'] = req.file.path;
                 
-                const passport = await cloudinary.uploader.upload(req.file.path, { folder: 'passport' });
+                await cloudinary.uploader.upload(req.file.path, { folder: 'passport' })
+                .then(async (passport) => {
 
-                userDetails['passport'] = passport.public_id;
-                userDetails['passportPath'] = passport.secure_url;
+                    userDetails['passport'] = passport.public_id;
+                    userDetails['passportPath'] = passport.secure_url;
 
-                await queries.create(User, userDetails);
+                    console.log(req.file.path)
+    
+                    await queries.create(User, userDetails);
+    
+                    // return {
+                    //     status: 200,
+                    //     data: { msg: 'Check back in afew days to confirm if you\'re eligible to vote or not. Thanks'}
+                    // }
+                })
+                .catch(err => {
+                    console.log(err)
+                })
 
                 return {
                     status: 200,
                     data: { msg: 'Check back in afew days to confirm if you\'re eligible to vote or not. Thanks'}
                 }
+
             } else {
 
                 // throw new Error('Account already exists');
