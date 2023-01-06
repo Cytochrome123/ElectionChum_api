@@ -21,10 +21,10 @@ const auth = {
             // userDetails['passport'] = req.file.originalname;
             // userDetails['passportPath'] = req.file.path;
             
-            const passport = await cloudinary.uploader.upload(req.file.path, { folder: 'passport' });
+            // const passport = await cloudinary.uploader.upload(req.file.path, { folder: 'passport' });
 
-            userDetails['passport'] = passport.public_id;
-            userDetails['passportPath'] = passport.secure_url;
+            // userDetails['passport'] = passport.public_id;
+            // userDetails['passportPath'] = passport.secure_url;
 
             await queries.create(User, userDetails);
 
