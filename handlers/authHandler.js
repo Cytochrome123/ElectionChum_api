@@ -20,18 +20,24 @@ const auth = {
             userDetails.password = factory.generateHashPassword(userDetails.password);
             // userDetails['passport'] = req.file.originalname;
             // userDetails['passportPath'] = req.file.path;
-            
-            const passport = await cloudinary.uploader.upload(req.file.path, { folder: 'passport' });
 
-            userDetails['passport'] = passport.public_id;
-            userDetails['passportPath'] = passport.secure_url;
+            try {
 
-            await queries.create(User, userDetails);
-
-            return {
-                status: 200,
-                data: { msg: 'Check back in afew days to confirm if you\'re eligible to vote or not. Thanks'}
+                const passport = await cloudinary.uploader.upload(req.file.path, { folder: 'passport' });
+    
+                userDetails['passport'] = passport.public_id;
+                userDetails['passportPath'] = passport.secure_url;
+    
+                await queries.create(User, userDetails);
+    
+                return {
+                    status: 200,
+                    data: { msg: 'Check back in afew days to confirm if you\'re eligible to vote or not. Thanks'}
+                }
+            } catch(e) {
+                throw e
             }
+            
         } else {
 
             // throw new Error('Account already exists');
