@@ -13,7 +13,7 @@ const auth = {
             let options = { lean: true };
 
             let exists = await queries.findOne(User, condition, options);
-            console.log(req.file)
+            console.log(`${req.file} fiest`)
             if(!exists) {
                 userDetails.password = factory.generateHashPassword(userDetails.password);
                 // userDetails['passport'] = req.file.originalname;
