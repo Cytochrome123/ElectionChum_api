@@ -4,21 +4,13 @@ const cors = require('cors');
 const session = require('express-session');
 const passport = require('passport');
 
-const app = express();
-app.use(cors({
-    origin: "http://localhost:3000",
-    // origin: ["http://localhost:3000", 'https://exam-mgt-server.herokuapp.com'], // allow to server to accept request from different origin
-    // [Access-Control-Allow-Origin]: *,
-    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-    credentials: true, // allow session cookie from browser to pass through
-    optionsSuccessStatus: 200,
-
-}))
 const passportLocalStrategy = require('./auth/passport');
 passportLocalStrategy(passport);
 
 const { auth, admin, user } = require('./routes');
 const db = require('./db');
+
+const app = express();
 
 app.use(express.json());
 // app.use((req, res, next) => {
@@ -30,7 +22,16 @@ app.use(express.json());
 //     next();
 // })
 // app.use(cors());
-
+app.use(cors({
+    origin: '*',
+    // origin: ["http://localhost:3000", 'https://exam-mgt-server.herokuapp.com'], // allow to server to accept request from different origin
+    // [Access-Control-Allow-Origin]: *,
+    // methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+    credentials: true, // allow session cookie from browser to pass through
+    optionsSuccessStatus: 200,
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));    
 
 app.use(session({
     secret: 'Election',
