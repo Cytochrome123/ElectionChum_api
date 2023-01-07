@@ -23,7 +23,7 @@ app.use((req, res, next) => {
 })
 // app.use(cors());
 app.use(cors({
-    origin: "http://localhost:3000/",
+    origin: "https://shy-plum-swordfish-sari.cyclic.app/",
     // origin: ["http://localhost:3000", 'https://exam-mgt-server.herokuapp.com'], // allow to server to accept request from different origin
     // [Access-Control-Allow-Origin]: *,
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
