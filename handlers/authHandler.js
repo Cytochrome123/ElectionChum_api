@@ -1,4 +1,5 @@
 const passport = require('passport');
+const crypto = require('crypto');
 
 const { queries } = require('../db');
 const { factory } = require('../config');
@@ -208,7 +209,58 @@ const auth = {
                 data: { msg: error.message }
             }
         }
-    }
+    },
+
+    sendOTP: async (userData) => {
+        try {
+            const otp = Math.floor(100000 + Math.random() * 9000000);
+            const ttl = 2 * 60 * 1000;
+            const expires = Date.now() + ttl;
+            const data = `${userData.phoneNumber}.${otp}.${expires}`;
+            const hash = crypto.createHmac('sha256', '12345').update(data).digest('hex');
+            const fullHash = `${hash}.${expires}`
+
+            return {
+                status: 200,
+                data: {phone: userData.phoneNumber, hash: fullHash, otp}
+            }
+        } catch (err) {
+            throw err;
+        }
+    },
+
+    verifyOTP: async (userData) => {
+        try {
+            const phone = userData.phoneNumber;
+            const hash = userData.hash;
+            const otp = userData.otp;
+            let [hashValue, expires] = hash.split('.');
+
+            let now = Date.now();
+            if(now > parseInt(expires)) {
+                return {
+                    status: 504,
+                    data: { msg: 'Timeout!!!, pls try again'}
+                }
+            }
+            const data = `${userData.phoneNumber}.${otp}.${expires}`;
+            const newCalculatedHash = crypto.createHmac('sha256', '12345').update(data).digest('hex');
+
+            if(newCalculatedHash === hashValue) {
+                return {
+                    status: 202,
+                    data: { msg: 'User confirmed'}
+                }
+            } else {
+                return {
+                    status: 400,
+                    data: {verification: false, msg: 'Incorrect OTP'}
+                }
+            }
+        } catch (err) {
+            throw err;
+        }
+    },
 };
 
 module.exports = auth;

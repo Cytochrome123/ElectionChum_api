@@ -8,5 +8,7 @@ module.exports = () => {
     router.post('/register', upload.single("passport"), authController.register);
     router.post('/login', authController.login);
     router.post('/forgotpassword', authController.resetPassword);
+    router.post('/sendOTP', authController.sendOTP);
+    router.post('/verifyOTP', authController.verifyOTP);
     return router;
 }

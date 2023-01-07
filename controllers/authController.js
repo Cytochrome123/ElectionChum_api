@@ -1,11 +1,11 @@
 const { authHandler } = require('../handlers');
 
 const auth = {
-    register: async (req, res, next) => {
+    register: async (req, res) => {
         try {
             const userDetails = req.body;
             
-            let response = await authHandler.register(req, userDetails, next);
+            let response = await authHandler.register(req, userDetails);
 
             res.status(response.status).json(response.data);
             
@@ -35,7 +35,33 @@ const auth = {
         } catch (err) {
             res.status(err.status).json(err.message);
         }
-    }
+    },
+
+    sendOTP: async (req, res) => {
+        try {
+            const userDetails = req.body;
+            
+            let response = await authHandler.sendOTP(userDetails);
+
+            res.status(response.status).json(response.data);
+            
+        } catch (err) {
+            throw err;
+        }
+    },
+
+    verifyOTP: async (req, res) => {
+        try {
+            const userDetails = req.body;
+            
+            let response = await authHandler.verifyOTP(userDetails);
+
+            res.status(response.status).json(response.data);
+            
+        } catch (err) {
+            throw err;
+        }
+    },
 };
 
 module.exports = auth;

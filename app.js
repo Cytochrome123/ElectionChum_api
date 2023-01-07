@@ -13,15 +13,24 @@ const db = require('./db');
 const app = express();
 
 app.use(express.json());
-// app.use(cors());
-app.use(cors({
-    origin: "http://localhost:3000",
-    // origin: ["http://localhost:3000", 'https://exam-mgt-server.herokuapp.com'], // allow to server to accept request from different origin
-    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-    credentials: true, // allow session cookie from browser to pass through
-    optionsSuccessStatus: 200,
+app.use((req, res, next) => {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.header(
+        "Access-Control-Allow-Origin",
+        "Origin, X-Requested-With, Content-Type, Accept"
+    );
+    next();
+})
+app.use(cors());
+// app.use(cors({
+//     // origin: "http://localhost:3000",
+//     // origin: ["http://localhost:3000", 'https://exam-mgt-server.herokuapp.com'], // allow to server to accept request from different origin
+//     // [Access-Control-Allow-Origin]: *,
+//     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+//     credentials: true, // allow session cookie from browser to pass through
+//     optionsSuccessStatus: 200,
 
-}))
+// }))
 
 app.use(session({
     secret: 'Election',
