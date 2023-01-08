@@ -14,9 +14,9 @@ const auth = {
         let options = { lean: true };
 
         let exists = await queries.findOne(User, condition, options);
-        console.log(req.file)
-        console.log(req.file.path)
-        console.log(userDetails.passport)
+        // console.log(req.file)
+        // console.log(req.file.path)
+        // console.log(userDetails.passport)
         if(!exists) {
             userDetails.password = factory.generateHashPassword(userDetails.password);
             // userDetails['passport'] = req.file.originalname;
@@ -229,7 +229,7 @@ const auth = {
         }
     },
 
-    verifyOTP: async (userData) => {
+    verifyOTP: async (req, userData) => {
         try {
             const phone = userData.phoneNumber;
             const hash = userData.hash;
@@ -243,15 +243,19 @@ const auth = {
                     data: { msg: 'Timeout!!!, pls try again'}
                 }
             }
-            const data = `${userData.phoneNumber}.${otp}.${expires}`;
+            const data = `${phone}.${otp}.${expires}`;
             const newCalculatedHash = crypto.createHmac('sha256', '12345').update(data).digest('hex');
-
+console.log(newCalculatedHash);
+console.log(hashValue)
             if(newCalculatedHash === hashValue) {
+                // req.verified = true;
                 return {
                     status: 202,
                     data: { msg: 'User confirmed'}
                 }
             } else {
+                // req.verified = true;
+                // console.log(req.verified)
                 return {
                     status: 400,
                     data: {verification: false, msg: 'Incorrect OTP'}
