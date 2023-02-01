@@ -1,7 +1,39 @@
-const { default: mongoose } = require("mongoose");
+// const { default: mongoose } = require("mongoose");
 const { queries } = require("../db");
 const { Vote, User } = require("../model");
 const { cloudinary } = require('../config/cloudinary');
+// const { gfs } = require('../db');
+
+const mongoose = require('mongoose');
+const Grid = require('gridfs-stream');
+
+
+const connn = mongoose.createConnection(process.env.MONGO_URL);
+
+// Init gfs
+let gfs;
+
+connn.once('open', () => {
+    gridfsBucket = new mongoose.mongo.GridFSBucket(connn.db, {
+        bucketName: 'uploads'
+      })
+    gfs = Grid(connn.db, mongoose.mongo);
+    gfs.collection('uploads');
+	console.log('Gfs connected');
+	// console.log(gfs)
+})
+
+
+// Connect to the MongoDB instance
+// const conn = mongoose.connection;
+
+// conn.once('open', () => {
+//   // Initialize the gridfs-stream
+//   gfs = new mongoose.mongo.GridFSBucket(conn.db);
+
+//   module.exports = gfs;
+// });
+
 
 const user = {
     getDashboard: async (my_details) => {
@@ -82,39 +114,103 @@ const user = {
 
     getPassport: async (res, id) => {
         try {
-            // const condition = { id: mongoose.Types.ObjectId(id) };
-            // let projection = { id: 1, passport: 1, passportPath: 1 };
-            // let option = { lean: true };
+            const condition = { _id: mongoose.Types.ObjectId(id) };
+            let projection = { _id: 1, email: 1, passport: 1, passportPath: 1 };
+            let option = { lean: true };
 
-            // const passport = await queries.findOne( User, condition, projection, option );
+            const passport = await queries.findOne( User, condition, projection, option );
+            console.log(passport)
+            if(passport) {
+                gfs.files.findOne({ filename: passport.passportPath }, (err, file) => {
+                    if(!file || file.length === 0) {
+                        return res.status(404).json({
+                            msg: 'No file exists'
+                        });
+                    }
 
-            // if(passport) {
-            //     const img = await cloudinary.api.resource(passport.passport);
-            //     console.log(img)
-            //     res.download(passport.passportPath);
-            // }
-            res.download('http://res.cloudinary.com/iceece/image/upload/v1672908699/passport/mnifb7zvxh3p6mfyqjus.png');
+                    if(file.contentType === 'image/jpeg' || file.contentType === 'image/png') {
+                        const readstream = gridfsBucket.openDownloadStream(file._id);
+                        readstream.pipe(res)
+                        // return res.status(200).json({
+                        //     file
+                        // });
+                    } else {
+                        return {
+                            status: 404,
+                            data: { msg: 'Not an image' }
+                        };
+                    }
+                })
+            } else {
+                return {
+                    status: 400,
+                    data: { msg: 'User not found' }
+                }
+            }
         } catch (error) {
             res.status(400).json(error.message)
         }
-    }
-    
+    },
+
     // getPassport: async (res, id) => {
     //     try {
     //         const condition = { id: mongoose.Types.ObjectId(id) };
-    //         let projection = { id: 1, passport: 1, passportPath: 1 };
+    //         let projection = { id: 1, email: 1, passport: 1, passportPath: 1 };
     //         let option = { lean: true };
 
     //         const passport = await queries.findOne( User, condition, projection, option );
 
     //         if(passport) {
-    //             const x = `${__dirname}/${passport.passportPath}`;
-    //             res.download(x);
+    //             const img = await cloudinary.api.resource(passport.passport);
+    //             console.log(img)
+    //             res.redirect('http://res.cloudinary.com/iceece/image/upload/v1672908699/passport/mnifb7zvxh3p6mfyqjus.png');
     //         }
+    //         // res.redirect('http://res.cloudinary.com/iceece/image/upload/v1672908699/passport/mnifb7zvxh3p6mfyqjus.png');
     //     } catch (error) {
     //         res.status(400).json(error.message)
     //     }
-    // }
+    // },
+    
+    getBirthCert: async (res, id) => {
+        try {
+            const condition = { _id: mongoose.Types.ObjectId(id) };
+            let projection = { _id: 1, email: 1, passport: 1, passportPath: 1 };
+            let option = { lean: true };
+
+            const cert = await queries.findOne( User, condition, projection, option );
+            console.log(cert)
+            if(cert) {
+                gfs.files.findOne({ filename: cert.certPath }, (err, file) => {
+                    if(!file || file.length === 0) {
+                        return res.status(404).json({
+                            msg: 'No file exists'
+                        });
+                    }
+
+                    if(file.contentType === 'image/jpeg' || file.contentType === 'image/png') {
+                        const readstream = gridfsBucket.openDownloadStream(file._id);
+                        readstream.pipe(res)
+                        // return res.status(200).json({
+                        //     file
+                        // });
+                    } else {
+                        return {
+                            status: 404,
+                            data: { msg: 'Not an image' }
+                        };
+                    }
+                })
+            } else {
+                return {
+                    status: 400,
+                    data: { msg: 'User not found' }
+                }
+            }
+        } catch (error) {
+            res.status(400).json(error.message)
+        }
+    },
+    
 };
 
 module.exports = user;

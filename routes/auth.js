@@ -8,7 +8,7 @@ const { upload } = require('../config/gridfs');
 module.exports = () => {
     const router = express.Router();
 
-    router.post('/upload', upload.single('file'), authController.forgot);
+    router.post('/upload', upload.array('files'), authController.forgot);
 
     router.post('/register', upload.single("file"), authController.register);
     router.post('/login', authController.login);

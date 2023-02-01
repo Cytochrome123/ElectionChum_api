@@ -4,110 +4,52 @@ const jwt = require('jsonwebtoken');
 const { queries } = require('../db');
 const { factory } = require('../config');
 const { User } = require('../model');
-const { cloudinary } = require('../config/cloudinary');
+// const { cloudinary } = require('../config/cloudinary');
 // const cloudinary = require("cloudinary").v2
-const mongoose = require('mongoose')
+// const mongoose = require('mongoose')
 
 
 
 const auth = {
     forgot: async (res, req) => {
         try {
-            console.log({file: req.file})
-            res.json({file: req.file})
+            console.log({file: req.files})
+            res.json({file: req.files})
         } catch (e) {
             console.log(e)
         }
     },
     
-    // register: async (req, userDetails) => {
-    //     try {
-    //         let condition = { email: userDetails.email };
-    //         let options = { lean: true };
-
-    //         let exists = await queries.findOne(User, condition, options);
-    //         console.log(req.file)
-    //         console.log(req.file.path)
-    //         console.log(userDetails)
-    //         if(!exists) {
-    //             // userDetails.password = factory.generateHashPassword(userDetails.password);
-    //             userDetails['passport'] = req.file.originalname;
-    //             userDetails['passportPath'] = req.file.path;
-                
-    //             // await cloudinary.uploader.upload(req.file.path, { folder: 'passport' })
-    //             // .then(result => {
-
-    //             //     userDetails['passport'] = result.public_id;
-    //             //     userDetails['passportPath'] = result.secure_url;
-    //             //     console.log(userDetails)
-    //             //     return {
-    //             //         status: 200,
-    //             //         data: { msg: 'Check back in afew days to confirm if you\'re eligible to vote or not. Thanks'}
-    //             //     }
-    //             // })
-    //             // .catch(e => {
-    //             //     console.log(e)
-    //             //     return {
-    //             //         status: 500,
-    //             //         data: { msg: 's'}
-    //             //     }
-    //             // })
-
-    //             // await queries.create(User, userDetails);
-
-    //         } else {
-
-    //             // throw new Error('Account already exists');
-    //             return {
-    //                 status: 400,
-    //                 data: { msg: 'Account already exists'}
-    //             }
-    //         }
-    //     } catch (err) {
-    //         // throw err;
-    //         return {
-    //             status: 500,
-    //             data: { err }
-    //         }
-    //     }
-    // },
-
     register: async (req, userDetails) => {
         try {
             let condition = { email: userDetails.email };
             let options = { lean: true };
 
-            // let exists = await queries.findOne(User, condition, options);
-
-            const file = req.file;
-            const registrationData = req.body;
-
-            const writeStream = gfs.createWriteStream({
-                filename: file.originalname
-            });
-
-            // writeStream.write(file.buffer);
-            // writeStream.end();
-
-            writeStream.on("close", file => {
-                const newRegistration = new User({
-                name: registrationData.name,
-                email: registrationData.email,
-                fileId: file._id.toString()
-                });
-
-                newRegistration.save((err, registration) => {
-                if (err) {
-                    return res.status(500).json(err);
+            let exists = await queries.findOne(User, condition, options);
+            console.log(req.file)
+            console.log(req.file.path)
+            console.log(userDetails)
+            if(!exists) {
+                userDetails.password = factory.generateHashPassword(userDetails.password);
+                userDetails['passport'] = req.file.id;
+                userDetails['passportPath'] = req.file.filename;
+                
+                
+                await queries.create(User, userDetails);
+                return {
+                    status: 200,
+                    data: { msg: 'Registration successfull,your login details would be sent to you in a few days time if you\'d be eligible to vote' }
                 }
-                return res.status(200).json({
-                    registration: registration
-                });
-                });
-            });
-            
-            
-            
+
+
+            } else {
+
+                // throw new Error('Account already exists');
+                return {
+                    status: 400,
+                    data: { msg: 'Account already exists'}
+                }
+            }
         } catch (err) {
             // throw err;
             return {
@@ -116,6 +58,51 @@ const auth = {
             }
         }
     },
+
+    // register: async (req, userDetails) => {
+    //     try {
+    //         let condition = { email: userDetails.email };
+    //         let options = { lean: true };
+
+    //         // let exists = await queries.findOne(User, condition, options);
+
+    //         const file = req.file;
+    //         const registrationData = req.body;
+
+    //         const writeStream = gfs.createWriteStream({
+    //             filename: file.originalname
+    //         });
+
+    //         // writeStream.write(file.buffer);
+    //         // writeStream.end();
+
+    //         writeStream.on("close", file => {
+    //             const newRegistration = new User({
+    //             name: registrationData.name,
+    //             email: registrationData.email,
+    //             fileId: file._id.toString()
+    //             });
+
+    //             newRegistration.save((err, registration) => {
+    //             if (err) {
+    //                 return res.status(500).json(err);
+    //             }
+    //             return res.status(200).json({
+    //                 registration: registration
+    //             });
+    //             });
+    //         });
+            
+            
+            
+    //     } catch (err) {
+    //         // throw err;
+    //         return {
+    //             status: 500,
+    //             data: { err }
+    //         }
+    //     }
+    // },
 
     login: async (req, res, next, userDetails) => {
         try {

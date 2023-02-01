@@ -18,7 +18,7 @@ const auth = {
             
             let response = await authHandler.register(req, userDetails);
 console.log(response)
-            res.status(response?.status).json(response.data);
+            res.status(response.status).json(response.data);
             
         } catch (err) {
             throw err;
