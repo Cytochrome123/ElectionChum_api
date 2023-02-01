@@ -35,8 +35,8 @@ app.use(cors({
 
 app.use(session({
     secret: 'Election',
-    resave: false,
-    saveUninitialized: false,
+    resave: true,
+    saveUninitialized: true,
     cookie: { secure: true },
 }));
 
@@ -52,3 +52,50 @@ app.listen(process.env.PORT || 5000, (err) => {
     if (err) console.log(err);
     else console.log('Server Connected!!!');
 });
+
+
+
+// const express = require('express');
+// const twilio = require('twilio');
+// const jwt = require('jsonwebtoken');
+// const router = express.Router();
+
+// router.post('/login', (req, res) => {
+//     const {username, password} = req.body;
+
+//     // Verify credentials against the database
+//     if (username === 'valid_username' && password === 'valid_password') {
+//         // Generate a one-time code
+//         const oneTimeCode = Math.floor(Math.random() * 1000000);
+//         // Generate a token
+//         const token = jwt.sign({username}, process.env.JWT_SECRET);
+
+//         // Send the code via SMS using Twilio
+//         const client = new twilio(accountSid, authToken);
+//         client.messages.create({
+//             to: '+1234567890', // User's registered mobile number
+//             from: '+0987654321', // Twilio phone number
+//             body: `Your one-time code is ${oneTimeCode}`
+//         })
+//         .then(() => {
+//             // Save the one-time code and token in cache
+//             cache.set(token, oneTimeCode, 'EX', 60);
+//             res.json({status: 'success', token});
+//         })
+//         .catch(err => {
+//             console.error(err);
+//             res.status(500).json({status: 'error', message: 'Failed to send SMS'});
+//         });
+//     } else {
+//         res.status(401).json({status: 'error', message: 'Invalid credentials'});
+//     }
+// });
+
+// router.post('/verify-code', (req, res) => {
+//     const {oneTimeCode, token} = req.body;
+
+//     // Verify the entered code and token against the cache
+//     if (oneTimeCode === cache.get(token)) {
+//         // Clear the one-time code and token from the cache
+//         cache.del(token);
+//         // Generate

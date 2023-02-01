@@ -13,5 +13,7 @@ cloudinary.config({
 //         format
 //     }
 // })
+// console.log(cloudinary)
+// console.log('far away')
 
 module.exports = {cloudinary}

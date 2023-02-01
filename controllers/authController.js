@@ -1,13 +1,24 @@
 const { authHandler } = require('../handlers');
 
 const auth = {
+    forgot: async (res, req) => {
+        try {
+            let response = await authHandler.forgot(req, res);
+
+            // res.status(response.status).json(response.data);
+            return response;
+        } catch (e) {
+            console.log(e)
+        }
+    },
+    
     register: async (req, res) => {
         try {
             const userDetails = req.body;
             
             let response = await authHandler.register(req, userDetails);
-
-            res.status(response.status).json(response.data);
+console.log(response)
+            res.status(response?.status).json(response.data);
             
         } catch (err) {
             throw err;
@@ -18,15 +29,44 @@ const auth = {
         try {
             const userDetails = req.body;
 
-            const response = authHandler.login(req, res, next);
+            const response = authHandler.login(req, res, next, userDetails);
             return response;
         } catch (err) {
             throw err;
         }
     },
 
+    verify: async (req, res, next) => {
+        try {
+            const {otp} = req.body;
+
+            const response = await authHandler.verify(req, res, next, otp);
+            return response;
+            
+        } catch (err) {
+            throw err;
+        }
+    },
+
+    // verify: async (req, res) => {
+    //     try {
+    //         const {otp} = req.body;
+
+    //         const response = await authHandler.verify(req, otp);
+    //         console.log(response)
+    //         if (response.msg === 'verified') {
+    //             res.redirect('/vote')
+    //         } else {
+    //             res.redirect('/api/login')
+    //         }
+    //     } catch (err) {
+    //         throw err;
+    //     }
+    // },
+
     resetPassword: async (req, res) => {
         try {
+            console.log(req.session)
             const payload = req.body;
 
             const response = await authHandler.resetPassword(payload);
