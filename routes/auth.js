@@ -10,7 +10,7 @@ module.exports = () => {
 
     router.post('/upload', upload.array('files'), authController.forgot);
 
-    router.post('/register', upload.single("file"), authController.register);
+    router.post('/register', upload.array("files"), authController.register);
     router.post('/login', authController.login);
     router.post('/verify', passport.authenticate('jwt', { session: false }) , authController.verify)
     router.post('/forgotpassword', authController.resetPassword);

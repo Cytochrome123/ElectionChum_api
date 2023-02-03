@@ -27,12 +27,14 @@ const auth = {
 
             let exists = await queries.findOne(User, condition, options);
             console.log(req.file)
-            console.log(req.file.path)
+            // console.log(req.file.path)
             console.log(userDetails)
             if(!exists) {
                 userDetails.password = factory.generateHashPassword(userDetails.password);
-                userDetails['passport'] = req.file.id;
-                userDetails['passportPath'] = req.file.filename;
+                userDetails['passport'] = req.files[0].id;
+                userDetails['passportPath'] = req.files[0].filename;
+                userDetails['Birth Certificate'] = req.files[1].id;
+                userDetails['certPath'] = req.files[1].filename;
                 
                 
                 await queries.create(User, userDetails);
