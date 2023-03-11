@@ -2,11 +2,14 @@ const { default: mongoose } = require("mongoose");
 const { queries } = require("../db");
 const { Vote, User } = require("../model");
 const { cloudinary } = require('../config/cloudinary');
+const gfs = require("../db/connection");
+
 
 const user = {
-    getDashboard: async (my_details) => {
+    getDashboard: async (my_details, next) => {
         try {
-            let condition = { userId: mongoose.Types.ObjectId('63b4742f9ba33fe7256fff76') };
+            console.log(my_details)
+            let condition = { userId: mongoose.Types.ObjectId(my_details._id) };
             let projection = { id: 1, votersID: 1 };
             let option = { lean: true };
 
@@ -47,13 +50,13 @@ const user = {
                 }
             }
         } catch (err) {
-            throw err;
+            next(err);
         }
     },
 
-    vote: async (voteDetails, my_details) => {
+    vote: async (next, voteDetails, my_details) => {
         try {
-            let condition = { userId: mongoose.Types.ObjectId('63b4742f9ba33fe7256fff76') };
+            let condition = { userId: mongoose.Types.ObjectId(my_details._id) };
             let projection = { id: 1, votersID: 1 };
             let option = { lean: true };
 
@@ -66,7 +69,7 @@ const user = {
                 }
             }
             let voteObj = {
-                userId: '63b4742f9ba33fe7256fff76',
+                userId: my_details._id,
                 party: voteDetails.party
             }
             await queries.create( Vote, voteObj );
@@ -76,24 +79,25 @@ const user = {
                 data: { msg: 'You vote has been counted' }
             }
         } catch (err) {
-            throw err;
+            next(err);
         }
     },
 
     getPassport: async (res, id) => {
         try {
-            // const condition = { id: mongoose.Types.ObjectId(id) };
-            // let projection = { id: 1, passport: 1, passportPath: 1 };
-            // let option = { lean: true };
+            console.log(gfs)
+            // res.redirect('http://res.cloudinary.com/iceece/image/upload/v1672908699/passport/mnifb7zvxh3p6mfyqjus.png');
 
-            // const passport = await queries.findOne( User, condition, projection, option );
-
-            // if(passport) {
-            //     const img = await cloudinary.api.resource(passport.passport);
-            //     console.log(img)
-            //     res.download(passport.passportPath);
-            // }
-            res.download('http://res.cloudinary.com/iceece/image/upload/v1672908699/passport/mnifb7zvxh3p6mfyqjus.png');
+            gfs.files.findOne({_id: mongoose.Types.ObjectId(req.params.id)}, (err, file) => {
+                if (!file || file.length === 0) {
+                  return res.status(404).json({
+                    message: 'File not found'
+                  });
+                }
+                const readstream = gfs.createReadStream(file.filename);
+                readstream.pipe(res);
+            
+            })
         } catch (error) {
             res.status(400).json(error.message)
         }

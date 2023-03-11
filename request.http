@@ -1,0 +1,72 @@
+### Register
+POST http://localhost:5000/api/register
+
+{
+    "file"
+}
+
+POST http://localhost:4000/upload
+
+{ "file": "me.pdf"}
+
+### Login
+POST http://localhost:5000/api/login
+Content-Type: application/json
+
+{
+    "votersID": "12345678",
+    "password": "12345678"
+}
+
+### Verify OTP for login
+POST http://localhost:5000/api/verify
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzYjY4NmU5YTlmNDU5YzIzMDU1ZjEwNiIsImlhdCI6MTY3ODM4NzE4NywiZXhwIjoxNjc4NDczNTg3fQ.pDViNzSBKqX6Mi5ECBnRF3Q5f_H6eyE7YFL6g3Gh3iI
+
+{
+    "otp": "684378",
+    "votersID": "12345678",
+    "password": "12345678"
+}
+
+### Get Dashboard
+GET http://localhost:5000/api
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzYjY4NmU5YTlmNDU5YzIzMDU1ZjEwNiIsImlhdCI6MTY3ODM4NzIzNCwiZXhwIjoxNjc4NjQ2NDM0fQ.EpeY5kObzk9DxgnHoc7XWZlzHRyFF0V13675N-ANFkM
+
+### Vote
+POST http://localhost:5000/api/vote
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzYjY4NmU5YTlmNDU5YzIzMDU1ZjEwNiIsImlhdCI6MTY3ODM4NzIzNCwiZXhwIjoxNjc4NjQ2NDM0fQ.EpeY5kObzk9DxgnHoc7XWZlzHRyFF0V13675N-ANFkM
+
+{
+    "party": "Myself"
+}
+
+GET http://localhost:4000/api/passport/640c8e5cd7638cb9e3358398
+
+
+### Admin --- Get pending users
+GET http://localhost:5000/api/review
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzYjY4NmI1YTlmNDU5YzIzMDU1ZjEwMCIsImlhdCI6MTY3ODM4MzMwNSwiZXhwIjoxNjc4NjQyNTA1fQ.Q5ciW99taYDKLA6Riyf6ej2MVHibS79V93pHC7GI7wM
+
+
+### Admin - Get one of the pending users and review
+GET http://localhost:5000/api/review/63dd7b3f0698ef8183b5f4d4
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzYjY4NmI1YTlmNDU5YzIzMDU1ZjEwMCIsImlhdCI6MTY3ODM4MzMwNSwiZXhwIjoxNjc4NjQyNTA1fQ.Q5ciW99taYDKLA6Riyf6ej2MVHibS79V93pHC7GI7wM
+
+### Review and approve the user
+PATCH http://localhost:5000/api/review/63dd7b3f0698ef8183b5f4d4
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzYjY4NmI1YTlmNDU5YzIzMDU1ZjEwMCIsImlhdCI6MTY3ODM4MzMwNSwiZXhwIjoxNjc4NjQyNTA1fQ.Q5ciW99taYDKLA6Riyf6ej2MVHibS79V93pHC7GI7wM
+
+{
+    "status": "declined"
+}
+
+// Mail
+// file
+// Pattern for votersID
+// NIN verification

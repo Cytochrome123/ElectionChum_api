@@ -7,7 +7,8 @@ const { User } = require('../model');
 const { cloudinary } = require('../config/cloudinary');
 // const cloudinary = require("cloudinary").v2
 const mongoose = require('mongoose')
-
+const {gfs} = require('../db')
+// let gfs;
 
 
 const auth = {
@@ -19,107 +20,48 @@ const auth = {
             console.log(e)
         }
     },
+
     
-    // register: async (req, userDetails) => {
-    //     try {
-    //         let condition = { email: userDetails.email };
-    //         let options = { lean: true };
-
-    //         let exists = await queries.findOne(User, condition, options);
-    //         console.log(req.file)
-    //         console.log(req.file.path)
-    //         console.log(userDetails)
-    //         if(!exists) {
-    //             // userDetails.password = factory.generateHashPassword(userDetails.password);
-    //             userDetails['passport'] = req.file.originalname;
-    //             userDetails['passportPath'] = req.file.path;
-                
-    //             // await cloudinary.uploader.upload(req.file.path, { folder: 'passport' })
-    //             // .then(result => {
-
-    //             //     userDetails['passport'] = result.public_id;
-    //             //     userDetails['passportPath'] = result.secure_url;
-    //             //     console.log(userDetails)
-    //             //     return {
-    //             //         status: 200,
-    //             //         data: { msg: 'Check back in afew days to confirm if you\'re eligible to vote or not. Thanks'}
-    //             //     }
-    //             // })
-    //             // .catch(e => {
-    //             //     console.log(e)
-    //             //     return {
-    //             //         status: 500,
-    //             //         data: { msg: 's'}
-    //             //     }
-    //             // })
-
-    //             // await queries.create(User, userDetails);
-
-    //         } else {
-
-    //             // throw new Error('Account already exists');
-    //             return {
-    //                 status: 400,
-    //                 data: { msg: 'Account already exists'}
-    //             }
-    //         }
-    //     } catch (err) {
-    //         // throw err;
-    //         return {
-    //             status: 500,
-    //             data: { err }
-    //         }
-    //     }
-    // },
-
-    register: async (req, userDetails) => {
+    // need to fix the issue of the file upload when the account is not created --- or can use delete method on gfs, let's see
+    register: async (next, userDetails, files) => {
         try {
+            // const { firstName, lastName, email, password, phoneNumber, stateOfOrigin } = userDetails;
+            
+            console.log(userDetails)
+
             let condition = { email: userDetails.email };
             let options = { lean: true };
+console.log(files)
+            let exists = await queries.findOne(User, condition, options);
+            if(!exists) {
+                userDetails.password = factory.generateHashPassword(userDetails.password);
+                userDetails['passport'] = {passportID: files['passport'][0].id};
+                userDetails['passport'] = {...userDetails.passport ,path: files['passport'][0].filename};
+                // userDetails['passport']['path'] = files['passport'][0].filename;
+                userDetails['Birth Certificate'] = { 'Birth CertificateID': files['Birth Certificate'][0].id};
+                userDetails['Birth Certificate'] ={...userDetails['Birth Certificate'] , path:  files['Birth Certificate'][0].filename};
 
-            // let exists = await queries.findOne(User, condition, options);
-
-            const file = req.file;
-            const registrationData = req.body;
-
-            const writeStream = gfs.createWriteStream({
-                filename: file.originalname
-            });
-
-            // writeStream.write(file.buffer);
-            // writeStream.end();
-
-            writeStream.on("close", file => {
-                const newRegistration = new User({
-                name: registrationData.name,
-                email: registrationData.email,
-                fileId: file._id.toString()
-                });
-
-                newRegistration.save((err, registration) => {
-                if (err) {
-                    return res.status(500).json(err);
+                // Save user to database
+                await queries.create(User, userDetails);
+console.log(userDetails)
+                return {
+                    status: 200,
+                    data: { msg: 'Check back in a few days to confirm if you\'re eligible to vote or not. Thanks'}
                 }
-                return res.status(200).json({
-                    registration: registration
-                });
-                });
-            });
-            
-            
-            
+            }
+            return {
+                status: 401,
+                data: { msg: 'Account already exists'}
+            }
         } catch (err) {
             // throw err;
-            return {
-                status: 500,
-                data: { err }
-            }
+            next(err)
         }
     },
 
     login: async (req, res, next, userDetails) => {
         try {
-            // User.findOne({ votersID: userDetails.votersID })
+            // User.findOne({ votersID: userDetails.votersID })63b686e9a9f459c23055f106
             let condition = { votersID: userDetails.votersID };
             let projection = {};
             let options = { lean: true };
@@ -168,7 +110,7 @@ const auth = {
     verify: async (req, res, next, otp) => {
         // the req.body to the login route is also passed automatically by the client and note to be entered again by the user
         try {
-            let condition = { _id: req.user._id };
+            let condition = { _id: mongoose.Types.ObjectId(req.user._id) };
             let projection = {};
             let options = { lean: true };
 

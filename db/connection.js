@@ -21,6 +21,9 @@ mongoose.connect(process.env.MONGO_URL, (err, conn) => {
 	if (err) {
 		console.log('Mongo error ', err);
 	} else {
+		// console.log(conn);
+		// console.log('************');
+		// console.log(mongoose.connection)
 		conn.once('open', () => {
 			gfs = Grid(conn.db, mongoose.mongo);
 			gfs.collection('uploads')
@@ -28,3 +31,15 @@ mongoose.connect(process.env.MONGO_URL, (err, conn) => {
 		console.log('Mongoose Connection is Successful');
 	}
 });
+
+// mongoose.connection.once('open', () => {
+// 	console.log('Hello')
+// 	const gfs = Grid(mongoose.connection.db, mongoose.mongo);
+// 	// use gfs here
+// });
+
+mongoose.connection.on('open', () => {
+	module.exports = gfs;
+});
+
+  

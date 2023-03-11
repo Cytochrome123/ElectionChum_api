@@ -23,7 +23,6 @@ module.exports = (passport) => {
                     let option = { lean: true };
 
                     let user = await queries.findOne( User, condition, projections, option );
-
                     if(user) {
                         if (user.status === 'pending') {
                             return done( null, false, {msg: 'Your account is still pending, check back later.Thanks'})
@@ -45,4 +44,35 @@ module.exports = (passport) => {
     passport.serializeUser((user, done) => {
 		done(null, toString(user._id));
 	});
+
+    passport.use(
+        new JwtStrategy(
+            {
+                jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+                secretOrKey: 'rubbish',
+    
+            },
+            async (jwtPayload, done) => {
+                // let query = { _id: mongoose.Types.ObjectId(jwtPayload.userId) };
+                let query = { _id: mongoose.Types.ObjectId(jwtPayload.id) };
+                console.log(query)
+    
+                let projections = { password: 0, };
+                let options = { lean: true };
+    
+                let user = await User.findOne(
+                    query,
+                    projections,
+                    options
+                );
+                // if (user && user.userType === jwtPayload.role) {
+                if (user) {
+                    // req.user = user
+                    return done(null, user);
+                } else {
+                    return done(null);
+                }
+            }
+        )
+    );
 }

@@ -5,103 +5,126 @@ const { User } = require('../model');
 
 
 const admin = {
-    getPendingUsers: async () => {
+    getPendingUsers: async (next, my_details) => {
         try {
-            let condition = { status: 'pending' };
-            let projections = { 
-                password: 0,
-                votersID: 0,
-                userType: 0,
-                passport: 0,
-                passportPath: 0,
-                proof: 0,
-                proofPath: 0
-            }
-            let options = {
-                lean: true,
-                sort: {createdDate: -1}
-            };
+            console.log(my_details)
+            if (my_details.userType === 'admin') {
 
-            let pendingUsers = await queries.find( User, condition, projections, options );
+                let condition = { status: 'pending' };
+                let projections = {
+                    password: 0,
+                    votersID: 0,
+                    userType: 0,
+                    passport: 0,
+                    passportPath: 0,
+                    proof: 0,
+                    proofPath: 0
+                }
+                let options = {
+                    lean: true,
+                    sort: { createdDate: -1 }
+                };
 
-            let count = await queries.countDocuments( User, condition );
-            // if(pendingUsers) {
+                let pendingUsers = await queries.find(User, condition, projections, options);
+
+                let count = await queries.countDocuments(User, condition);
+                // if(pendingUsers) {
                 return {
                     status: 200,
                     data: { pendingUsers, count }
-                // }
-            }
-        } catch (err) {
-            throw err;
-        }
-    },
-
-    review: async (id) => {
-        try {
-            let condition = { _id: mongoose.Types.ObjectId(id) };
-            let projections = {
-                password: 0,
-                votersID: 0,
-                userType: 0,
-            };
-            let option = { lean: true };
-
-            let details = await queries.findOne( User, condition, projections, option );
-
-            if(details) {
-                return {
-                    status: 200,
-                    data: { details }
+                    // }
                 }
             }
             return {
-                status: 400,
-                data: { msg: 'Unable to load data!' }
+                status: 403,
+                data: { msg: 'Sign in as an admin to access' }
             }
         } catch (err) {
-            throw err;
+            next(err)
         }
     },
 
-    sendReview: async (id, payload) => {
+    review: async (next, my_details, id) => {
         try {
-            let condition = { _id: mongoose.Types.ObjectId(id) };
-            let options = { lean: true, new: true };
-            let update;
-            if(payload.status === 'approved') {
-                update = {
-                    status: payload.status,
-                    votersID: 12345678
+            if (my_details.userType === 'admin') { 
+
+                let condition = { _id: mongoose.Types.ObjectId(id) };
+                let projections = {
+                    password: 0,
+                    votersID: 0,
+                    userType: 0,
+                };
+                let option = { lean: true };
+
+                let details = await queries.findOne(User, condition, projections, option);
+
+                if (details) {
+                    return {
+                        status: 200,
+                        data: { details }
+                    }
                 }
-            } else {
-                update = {
-                    status: payload.status
-                }
-            }
-
-            let updatedUser = await queries.update( User, condition, update, options );
-            console.log(updatedUser)
-
-            // let mailOptions = {
-            //     to: updatedUser.email,
-            //     from: sender,
-            //     subject: 'Examiner confirmation mail',
-            //     text: `Your email id ${updatedUser.email} has been ${
-            //         updatedUser.status === 'approved'
-            //             ? `approved.Your voter's ID is ${updatedUser.votersID}`
-            //             : `declined, as ${payload.comment}`
-            //     }  Thanks`,
-            // };
-
-            if(updatedUser) {
                 return {
-                    status: 200,
-                    data: { msg: 'Your review has been made sucessfully!!!'}
+                    status: 400,
+                    data: { msg: 'Unable to load data!' }
                 }
             }
             return {
-                status: 400,
-                data: { msg: 'Your review couldn\'t complete'}
+                status: 403,
+                data: { msg: 'Signin as an admin to get access to the data' }
+            }
+        } catch (err) {
+            next(err)
+        }
+    },
+
+    sendReview: async (my_details, id, payload) => {
+        try {
+            if (my_details.userType === 'admin') {
+
+                let condition = { _id: mongoose.Types.ObjectId(id) };
+                let options = { lean: true, new: true };
+                let update;
+                if (payload.status === 'approved') {
+                    // need a pattern for the votersID
+                    update = {
+                        status: payload.status,
+                        votersID: 12345678
+                    }
+                } else {
+                    update = {
+                        status: payload.status
+                    }
+                }
+
+                let updatedUser = await queries.update(User, condition, update, options);
+                console.log(updatedUser)
+
+                // let mailOptions = {
+                //     to: updatedUser.email,
+                //     from: sender,
+                //     subject: 'Examiner confirmation mail',
+                //     text: `Your email id ${updatedUser.email} has been ${
+                //         updatedUser.status === 'approved'
+                //             ? `approved.Your voter's ID is ${updatedUser.votersID}`
+                //             : `declined, as ${payload.comment}`
+                //     }  Thanks`,
+                // };
+
+                if (updatedUser) {
+                    return {
+                        status: 200,
+                        data: { msg: 'Your review has been made sucessfully!!!' }
+                    }
+                }
+                return {
+                    status: 400,
+                    data: { msg: 'Your review couldn\'t complete' }
+                }
+            }
+            return {
+                status: 403,
+                data: { msg: 'Sign in as an admin fam' }
             }
         } catch (err) {
             // throw err;

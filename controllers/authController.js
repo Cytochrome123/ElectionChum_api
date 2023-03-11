@@ -12,16 +12,23 @@ const auth = {
         }
     },
     
-    register: async (req, res) => {
+    // need a body validation    --------------------------
+    register: async (req, res, next) => {
         try {
             const userDetails = req.body;
+            const files = req.files;
             
-            let response = await authHandler.register(req, userDetails);
+            let response = await authHandler.register(next, userDetails, files);
 console.log(response)
-            res.status(response?.status).json(response.data);
+            if(response) {
+                res.status(response.status).json(response.data);
+            } else {
+                res.status(500).json({msg: ''});
+            }
             
         } catch (err) {
-            throw err;
+            // throw err;
+            next(err);
         }
     },
 

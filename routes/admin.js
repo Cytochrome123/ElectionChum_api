@@ -1,13 +1,14 @@
 const express = require('express');
+const passport = require('passport');
 
 const { adminController } = require('../controllers');
 
 module.exports = () => {
     const router = express.Router();
 
-    router.get('/review', adminController.getPendingUsers);
-    router.get('/review/:id', adminController.review);
-    router.patch('/review/:id', adminController.sendReview);
+    router.get('/review', passport.authenticate('jwt') , adminController.getPendingUsers);
+    router.get('/review/:id', passport.authenticate('jwt') ,adminController.review);
+    router.patch('/review/:id', passport.authenticate('jwt') ,adminController.sendReview);
     
     return router;
 }
