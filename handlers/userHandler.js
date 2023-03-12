@@ -1,4 +1,4 @@
-// const { default: mongoose } = require("mongoose");
+const { default: mongoose } = require("mongoose");
 const { queries } = require("../db");
 const { Vote, User } = require("../model");
 const { cloudinary } = require('../config/cloudinary');
@@ -226,62 +226,19 @@ const user = {
     // getPassport: async (res, id) => {
     //     try {
     //         const condition = { id: mongoose.Types.ObjectId(id) };
-    //         let projection = { id: 1, email: 1, passport: 1, passportPath: 1 };
+    //         let projection = { id: 1, passport: 1, passportPath: 1 };
     //         let option = { lean: true };
 
     //         const passport = await queries.findOne( User, condition, projection, option );
 
     //         if(passport) {
-    //             const img = await cloudinary.api.resource(passport.passport);
-    //             console.log(img)
-    //             res.redirect('http://res.cloudinary.com/iceece/image/upload/v1672908699/passport/mnifb7zvxh3p6mfyqjus.png');
+    //             const x = `${__dirname}/${passport.passportPath}`;
+    //             res.download(x);
     //         }
-    //         // res.redirect('http://res.cloudinary.com/iceece/image/upload/v1672908699/passport/mnifb7zvxh3p6mfyqjus.png');
     //     } catch (error) {
     //         res.status(400).json(error.message)
     //     }
-    // },
-    
-    getBirthCert: async (res, id) => {
-        try {
-            const condition = { _id: mongoose.Types.ObjectId(id) };
-            let projection = { _id: 1, email: 1, passport: 1, passportPath: 1 };
-            let option = { lean: true };
-
-            const cert = await queries.findOne( User, condition, projection, option );
-            console.log(cert)
-            if(cert) {
-                gfs.files.findOne({ filename: cert.certPath }, (err, file) => {
-                    if(!file || file.length === 0) {
-                        return res.status(404).json({
-                            msg: 'No file exists'
-                        });
-                    }
-
-                    if(file.contentType === 'image/jpeg' || file.contentType === 'image/png') {
-                        const readstream = gridfsBucket.openDownloadStream(file._id);
-                        readstream.pipe(res)
-                        // return res.status(200).json({
-                        //     file
-                        // });
-                    } else {
-                        return {
-                            status: 404,
-                            data: { msg: 'Not an image' }
-                        };
-                    }
-                })
-            } else {
-                return {
-                    status: 400,
-                    data: { msg: 'User not found' }
-                }
-            }
-        } catch (error) {
-            res.status(400).json(error.message)
-        }
-    },
-    
+    // }
 };
 
 module.exports = user;

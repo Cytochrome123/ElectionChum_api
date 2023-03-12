@@ -1,35 +1,20 @@
 const mongoose = require('mongoose');
 const Grid = require('gridfs-stream');
 
-// const connn = mongoose.createConnection(process.env.MONGO_URL);
-
-// // Init gfs
-// let gfs;
-
-// connn.once('open', () => {
-//     gridfsBucket = new mongoose.mongo.GridFSBucket(connn.db, {
-//         bucketName: 'uploads'
-//       })
-//     gfs = Grid(connn.db, mongoose.mongo);
-//     gfs.collection('uploads');
-// 	console.log('Mongoose Connection is Successful');
-// 	// console.log(gfs)
-// })
-
 // mongoose.set('useNewUrlParser', true);
 // mongoose.set('useUnifiedTopology', true);
 
 // const url = `mongodb://${process.env.MONGO_HOSTNAME}:${process.env.MONGO_PORT}/${process.env.MONGO_DB}`;
 
 // Create mongo connection
-// const connn = mongoose.createConnection(process.env.MONGO_URL);
+// const conn = mongoose.createConnection(process.env.MONGO_URL);
 
 // Init gfs
 // let gfs;
 
 mongoose.connect(process.env.MONGO_URL, (err, conn) => {
 	if (err) {
-	  console.log('Mongo error ', err);
+		console.log('Mongo error ', err);
 	} else {
 		// console.log(conn);
 		// console.log('************');
@@ -39,7 +24,6 @@ mongoose.connect(process.env.MONGO_URL, (err, conn) => {
 		// 	gfs.collection('uploads')
 		// })
 		console.log('Mongoose Connection is Successful');
-	  });
 	}
 });
 
