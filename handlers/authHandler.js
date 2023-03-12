@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const { queries } = require('../db');
 const { factory } = require('../config');
 const { User } = require('../model');
-const { cloudinary } = require('../config/cloudinary');
+// const { cloudinary } = require('../config/cloudinary');
 // const cloudinary = require("cloudinary").v2
 const mongoose = require('mongoose')
 // const {gfs} = require('../db')
@@ -28,8 +28,8 @@ conn.once('open', () => {
 const auth = {
     forgot: async (res, req) => {
         try {
-            console.log({file: req.file})
-            res.json({file: req.file})
+            console.log({file: req.files})
+            res.json({file: req.files})
         } catch (e) {
             console.log(e)
         }
@@ -85,6 +85,51 @@ console.log(userDetails)
             next(err)
         }
     },
+
+    // register: async (req, userDetails) => {
+    //     try {
+    //         let condition = { email: userDetails.email };
+    //         let options = { lean: true };
+
+    //         // let exists = await queries.findOne(User, condition, options);
+
+    //         const file = req.file;
+    //         const registrationData = req.body;
+
+    //         const writeStream = gfs.createWriteStream({
+    //             filename: file.originalname
+    //         });
+
+    //         // writeStream.write(file.buffer);
+    //         // writeStream.end();
+
+    //         writeStream.on("close", file => {
+    //             const newRegistration = new User({
+    //             name: registrationData.name,
+    //             email: registrationData.email,
+    //             fileId: file._id.toString()
+    //             });
+
+    //             newRegistration.save((err, registration) => {
+    //             if (err) {
+    //                 return res.status(500).json(err);
+    //             }
+    //             return res.status(200).json({
+    //                 registration: registration
+    //             });
+    //             });
+    //         });
+            
+            
+            
+    //     } catch (err) {
+    //         // throw err;
+    //         return {
+    //             status: 500,
+    //             data: { err }
+    //         }
+    //     }
+    // },
 
     login: async (req, res, next, userDetails) => {
         try {
