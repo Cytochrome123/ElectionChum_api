@@ -116,20 +116,7 @@ console.log(userDetails)
     
                     res.status(200).json({ msg: 'check your mail or phone for an OTP sent', userDetails, token})
                 }
-                // user.OTP = OTP;
-                // await user.save()
-                // .then(() => {
-
-                //     //creates session and assign a token to it
-                //     const token = jwt.sign({ id: user._id}, 'rubbish', {
-                //         expiresIn: '1d'
-                //     });
-    
-                //     res.status(200).json({ msg: 'check your mail or phone for an OTP sent', token})
-                // })
-
-            // })
-            // .catch(e => console.log(e))
+                
         } catch (err) {
             next(err);
         }
@@ -149,35 +136,7 @@ console.log(userDetails)
 
                 if(user.OTP !== otp) return res.status(401).json({ msg: 'Invalid OTP'});
 
-                // req.login(user)
-                // .then(async () => {
-                //     const userObj = {
-                //         firstName: user.firstName,
-                //         lastName: user.lastName,
-                //         email: user.email,
-                //         phoneNumber: user.phoneNumber,
-                //         ['State of Origin']: user['State of Origin'],
-                //         LGA: user.LGA,
-                //         residence: user.residence,
-                //         votersID: user.votersID,
-                //         userType: user.userType,
-                //         passport: user.passport,
-                //         passportPath: user.passportPath,
-                //     };
-
-                //     const newToken = jwt.sign({ id: user._id}, 'rubbish', {
-                //         expiresIn: '3d'
-                //     });
-    
-                //     user.lastLogin = new Date();
-                //     await user.save()
-                //     .then(() => res.status(200).json({ token: newToken, userObj }))
-                    
-                //     // res.status(200).json({userObj, token})
-                // })
-                // .catch(err => {
-                //     if (err) throw err;
-                // })
+                
                 req.login(user, async (err) => {
                     if (err) throw err;
                     const userObj = {
@@ -210,218 +169,11 @@ console.log(userDetails)
                 });
             })(req, res, next)
 
-            // User.findOne({ _id: req.user._id })
-            // queries.findOne( User, condition, projection, option )
-            // .then(async user => {
-            //     console.log(user);
-            //     if (!user) return res.status(401).json({ msg: 'Invalid user'});
-            //     if(user.OTP !== otp) return res.status(401).json({ msg: 'Invalid OTP'});
-
-            //     const newToken = jwt.sign({ id: user._id}, 'rubbish', {
-            //         expiresIn: '3d'
-            //     });
-
-            //     user.lastLogin = new Date();
-            //     await user.save()
-            //     .then(() => res.status(200).json({ token: newToken }))
-            // })
         } catch (err) {
             next(err);
         }
     },
 
-    // register: async (req, userDetails) => {
-    //     try {
-    //         let condition = { email: userDetails.email };
-    //         let options = { lean: true };
-
-    //         let exists = await queries.findOne(User, condition, options);
-    //         console.log(req.file)
-    //         // console.log(req.file.path)
-    //         console.log(userDetails.passport)
-    //         if(!exists) {
-    //             userDetails.password = factory.generateHashPassword(userDetails.password);
-    //             // userDetails['passport'] = req.file.originalname;
-    //             // userDetails['passportPath'] = req.file.path;
-                
-    //             await cloudinary.uploader.upload(req.file.path, { folder: 'passport' })
-    //             .then(async (passport) => {
-
-    //                 userDetails['passport'] = passport.public_id;
-    //                 userDetails['passportPath'] = passport.secure_url;
-
-    //                 console.log(userDetails)
-    
-    //                 await queries.create(User, userDetails).then(res => {
-                        
-    //                     return {
-    //                         status: 200,
-    //                         data: { msg: 'Check back in afew days to confirm if you\'re eligible to vote or not. Thanks'}
-    //                     }
-    //                 })
-    
-    //             })
-    //             .catch(err => {
-    //                 console.log(err)
-    //             })
-
-    //             // return {
-    //             //     status: 200,
-    //             //     data: { msg: 'Check back in afew days to confirm if you\'re eligible to vote or not. Thanks'}
-    //             // }
-
-    //         } else {
-
-    //             // throw new Error('Account already exists');
-    //             return {
-    //                 status: 400,
-    //                 data: { msg: 'Account already exists'}
-    //             }
-    //         }
-    //     } catch (err) {
-    //         throw err;
-    //         // return {
-    //         //     status: 400,
-    //         //     data: { msg: err.message }
-    //         // }
-    //     }
-    // },
-
-    // register: async (req, userDetails) => {
-    //     try {
-    //         let condition = { email: userDetails.email };
-    //         let options = { lean: true };
-
-    //         let exists = await queries.findOne(User, condition, options);
-
-    //         if(!exists) {
-    //             userDetails.password = factory.generateHashPassword(userDetails.password);
-    //             userDetails['passport'] = req.file.originalname;
-    //             userDetails['passportPath'] = req.file.path;
-
-    //             await queries.create(User, userDetails);
-
-    //             return {
-    //                 status: 200,
-    //                 data: { msg: 'Check back in afew days to confirm if you\'re eligible to vote or not. Thanks'}
-    //             }
-    //         }
-    //         // throw new Error('Account already exists');
-    //         return {
-    //             status: 400,
-    //             data: { msg: 'Account already exists'}
-    //         }
-    //     } catch (err) {
-    //         throw err;
-    //         // return {
-    //         //     status: 400,
-    //         //     data: { msg: 'Account already exists'}
-    //         // }
-    //     }
-    // },
-
-    // login: async (req, res, next) => {
-    //     try {
-    //         passport.authenticate('local', (err, user, info) => {
-    //             if(err) throw err;
-
-    //             if (!user) return res.status(400).json({ msg: info.msg });
-
-    //             const OTP = Math.floor(Math.random() * 1000000);
-    //             console.log(OTP)
-    //             // req.session.OTP = 123;
-    //             // console.log(req.session);
-
-    //             const token = jwt.sign({email: user.email}, 'hgkebg');
-    //             // **************** cache.set(token, OTP, 'EX', 60); *******
-    //             // Send the code via SMS using Twilio
-    //             // const client = new twilio(accountSid, authToken);
-    //             // client.messages.create({
-    //             //     to: '+1234567890', // User's registered mobile number
-    //             //     from: '+0987654321', // Twilio phone number
-    //             //     body: `Your one-time code is ${oneTimeCode}`
-    //             // })
-    //             // .then(() => {
-    //             //     // Save the one-time code and token in cache
-    //             //     cache.set(token, oneTimeCode, 'EX', 60);
-    //             //     res.json({status: 'success', token});
-    //             // })
-    //             // .catch(err => {
-    //             //     console.error(err);
-    //             //     res.status(500).json({status: 'error', message: 'Failed to send SMS'});
-    //             // });
-                
-    //             // req.login(user, (err) => {
-    //             //     if (err) throw err;
-    //             //     const userObj = {
-    //             //         firstName: user.firstName,
-    //             //         lastName: user.lastName,
-    //             //         email: user.email,
-    //             //         phoneNumber: user.phoneNumber,
-    //             //         ['State of Origin']: user['State of Origin'],
-    //             //         LGA: user.LGA,
-    //             //         residence: user.residence,
-    //             //         votersID: user.votersID,
-    //             //         userType: user.userType,
-    //             //         passport: user.passport,
-    //             //         passportPath: user.passportPath,
-    //             //     };
-                    
-    //             //     res.status(200).json({userObj, token})
-    //             // });
-
-    //         })(req, res, next)
-    //     } catch (err) {
-    //         res.status(400).json({ msg: err.message });
-    //         // throw err;
-    //     }
-    // },
-
-    // verify: async (req, otp) => {
-    //     try {
-    //         // console.log(otp)
-    //         // console.log(req.session)
-    //         // console.log(req.session.OTP)
-    //         // if (otp === req.session.OTP) {
-    //         //     // Clear the one-time code from the session
-    //         //     req.session.OTP = null;
-    //         //     return {
-    //         //         status: 200,
-    //         //         msg: 'verified'
-    //         //     }
-        
-    //         // }
-    //         cache.get(token)
-    //         return {
-    //             status: 400,
-    //             msg: 'Not verified'
-    //         }
-
-    //         req.login(user, (err) => {
-    //             if (err) throw err;
-    //             const userObj = {
-    //                 firstName: user.firstName,
-    //                 lastName: user.lastName,
-    //                 email: user.email,
-    //                 phoneNumber: user.phoneNumber,
-    //                 ['State of Origin']: user['State of Origin'],
-    //                 LGA: user.LGA,
-    //                 residence: user.residence,
-    //                 votersID: user.votersID,
-    //                 userType: user.userType,
-    //                 passport: user.passport,
-    //                 passportPath: user.passportPath,
-    //             };
-                
-    //             res.status(200).json({userObj, token})
-    //         });
-    //     } catch (err) {
-    //         return {
-    //             status: 400,
-    //             msg: err.message
-    //         }
-    //     }
-    // },
 
     resetPassword: async (payload) => {
         try {
