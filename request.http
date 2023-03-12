@@ -43,7 +43,12 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzYjY4NmU5Y
     "party": "Myself"
 }
 
-GET http://localhost:4000/api/passport/640c8e5cd7638cb9e3358398
+GET http://localhost:5000/api/file/640c8e5cd7638cb9e3358398
+
+### Update file
+PATCH http://localhost:5000/api/file/640c8e5cd7638cb9e3358398
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzYjY4NmU5YTlmNDU5YzIzMDU1ZjEwNiIsImlhdCI6MTY3ODY1MTAyNCwiZXhwIjoxNjc4NzM3NDI0fQ.0G9TN-m2piqeCm7zLoIKlIsLcbN2BmdsjRCuEDxgK-c
 
 
 ### Admin --- Get pending users

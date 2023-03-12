@@ -7,9 +7,23 @@ const { User } = require('../model');
 const { cloudinary } = require('../config/cloudinary');
 // const cloudinary = require("cloudinary").v2
 const mongoose = require('mongoose')
-const {gfs} = require('../db')
+// const {gfs} = require('../db')
 // let gfs;
 
+let gfs;
+
+const conn = mongoose.createConnection(process.env.MONGO_URL, {
+	useNewUrlParser: true,
+	useUnifiedTopology: true,
+	// useCreateIndex: true,
+});
+
+conn.once('open', () => {
+    gfs = new mongoose.mongo.GridFSBucket(conn.db, {
+		bucketName: 'uploads',
+	});
+	console.log('GFS up!!!')
+})
 
 const auth = {
     forgot: async (res, req) => {
@@ -26,7 +40,18 @@ const auth = {
     register: async (next, userDetails, files) => {
         try {
             // const { firstName, lastName, email, password, phoneNumber, stateOfOrigin } = userDetails;
-            
+            // files.map(file => {
+                if(files['passport'][0].size > 5000000) {
+                    this.deleteImage(files['passport'][0].id);
+                    return {
+                        status: 400,
+                        data: { msg: 'File shld not exceed 5mb'}
+                    }
+                }
+            // })
+            // if(files.size > 5000000) {
+            //     this.deleteImage()
+            // }
             console.log(userDetails)
 
             let condition = { email: userDetails.email };
@@ -49,6 +74,8 @@ console.log(userDetails)
                     data: { msg: 'Check back in a few days to confirm if you\'re eligible to vote or not. Thanks'}
                 }
             }
+            auth.deleteImage(files['passport'][0].id);
+            auth.deleteImage(files['Birth Certificate'][0].id)
             return {
                 status: 401,
                 data: { msg: 'Account already exists'}
@@ -71,6 +98,7 @@ console.log(userDetails)
                 if (!user) return res.status(401).json({ msg: 'Invalid votersID'});
                 const correlates = factory.compareHashedPassword(userDetails.password, user.password);
                 if(!correlates) return res.status(401).json({ msg: 'Invalid password'});
+ // *******     // if(user.status !== 'approved') return res.status(403).json({msg: 'You need to get your account approved before you can log in'})
                 // generate the OTP
                 const OTP = Math.floor(100000 + Math.random() * 900000);
                 console.log(OTP);
@@ -487,6 +515,18 @@ console.log(userDetails)
             throw err;
         }
     },
+
+    deleteImage: (id) => {
+        if (!id || id === 'undefined') return res.status(400).send('No image ID');
+        const _id = new mongoose.Types.ObjectId(id);
+        gfs.delete(_id, (err) => {
+          if (err) return {
+            status: 500,
+            data: { msg: 'image deletion error'}
+          }
+          console.log('file deleted');
+        });
+    }
 };
 
 module.exports = auth;

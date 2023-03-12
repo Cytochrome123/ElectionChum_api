@@ -10,12 +10,7 @@ const Grid = require('gridfs-stream');
 // const conn = mongoose.createConnection(process.env.MONGO_URL);
 
 // Init gfs
-let gfs;
-
-// conn.once('open', () => {
-//     gfs = Grid(conn.db, mongoose.mongo);
-//     gfs.collection('uploads')
-// })
+// let gfs;
 
 mongoose.connect(process.env.MONGO_URL, (err, conn) => {
 	if (err) {
@@ -24,22 +19,33 @@ mongoose.connect(process.env.MONGO_URL, (err, conn) => {
 		// console.log(conn);
 		// console.log('************');
 		// console.log(mongoose.connection)
-		conn.once('open', () => {
-			gfs = Grid(conn.db, mongoose.mongo);
-			gfs.collection('uploads')
-		})
+		// conn.once('open', () => {
+		// 	gfs = Grid(conn.db, mongoose.mongo);
+		// 	gfs.collection('uploads')
+		// })
 		console.log('Mongoose Connection is Successful');
 	}
 });
+
+// const conn = mongoose.createConnection(process.env.MONGO_URL, {
+// 	useNewUrlParser: true,
+// 	useUnifiedTopology: true,
+// 	// useCreateIndex: true,
+// });
+
+// conn.once('open', () => {
+//     gfs = new mongoose.mongo.GridFSBucket(conn.db, {
+// 		bucketName: 'uploads',
+// 	});
+// 	console.log('GFS up!!!')
+// })
 
 // mongoose.connection.once('open', () => {
 // 	console.log('Hello')
 // 	const gfs = Grid(mongoose.connection.db, mongoose.mongo);
 // 	// use gfs here
 // });
-
-mongoose.connection.on('open', () => {
-	module.exports = gfs;
-});
-
-  
+// export default gfs
+// mongoose.connection.on('open', () => {
+// 	module.exports = gfs;
+// });

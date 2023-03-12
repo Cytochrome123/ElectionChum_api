@@ -25,13 +25,27 @@ const user = {
         }
     },
 
-    getPassport: async (req, res, next) => {
+    getFile: async (req, res, next) => {
         try {
             const {id} = req.params;
 
-            const response = userHandler.getPassport(res, id);
+            const response = userHandler.getFile(res, id);
             return response;
         } catch (error) {
+            next(err)
+        }
+    },
+
+    updateFile: async (req, res, next) => {
+        try {
+            const my_details = req.user;
+            const { id } = req.params;
+            const { files } = req;
+
+            const response = await userHandler.updateFile(next, my_details, id, files);
+
+            res.status(response.status).json(response.data);
+        } catch (err) {
             next(err)
         }
     }

@@ -2,7 +2,22 @@ const { default: mongoose } = require("mongoose");
 const { queries } = require("../db");
 const { Vote, User } = require("../model");
 const { cloudinary } = require('../config/cloudinary');
-const gfs = require("../db/connection");
+// const gfs = require("../db");
+
+let gfs;
+
+const conn = mongoose.createConnection(process.env.MONGO_URL, {
+	useNewUrlParser: true,
+	useUnifiedTopology: true,
+	// useCreateIndex: true,
+});
+
+conn.once('open', () => {
+    gfs = new mongoose.mongo.GridFSBucket(conn.db, {
+		bucketName: 'uploads',
+	});
+	console.log('GFS up!!!')
+})
 
 
 const user = {
@@ -83,24 +98,129 @@ const user = {
         }
     },
 
-    getPassport: async (res, id) => {
+    getFile: async (res, id) => {
         try {
             console.log(gfs)
             // res.redirect('http://res.cloudinary.com/iceece/image/upload/v1672908699/passport/mnifb7zvxh3p6mfyqjus.png');
 
-            gfs.files.findOne({_id: mongoose.Types.ObjectId(req.params.id)}, (err, file) => {
+            gfs.find({_id: mongoose.Types.ObjectId(id)}).toArray((err, file) => {
+                if (!id || id === 'undefined') return res.status(400).send('No ID');
                 if (!file || file.length === 0) {
                   return res.status(404).json({
                     message: 'File not found'
                   });
                 }
-                const readstream = gfs.createReadStream(file.filename);
-                readstream.pipe(res);
+                console.log(file);
+                // const readstream = gfs.createReadStream(file.filename);
+                // readstream.pipe(res);
             
-            })
+                const downloadStream = gfs.openDownloadStream(new mongoose.Types.ObjectId(id))
+            
+                downloadStream.on('error', (error) => {
+                  console.log('Error downloading file:', error);
+                  res.sendStatus(404);
+                });
+            
+                downloadStream.pipe(res);
+            });
+
+
+            // gfs.files.findOne({_id: mongoose.Types.ObjectId(req.params.id)}, (err, file) => {
+            //     if (!file || file.length === 0) {
+            //       return res.status(404).json({
+            //         message: 'File not found'
+            //       });
+            //     }
+            //     const readstream = gfs.createReadStream(file.filename);
+            //     readstream.pipe(res);
+            
+            // })
         } catch (error) {
             res.status(400).json(error.message)
         }
+    },
+
+    updateFile: async (next, my_details, id, files) => {
+        /**
+         * find the user with either auth or
+         * id of the file to change
+         * update the users data with the newly updated file-- if passport, if cert.length
+         * delete the old file by id
+         */
+
+        try {
+            if(!files) return { status: 402, data: { msg: 'You need to upload a file'}}
+
+            const userr = await User.findById(my_details._id);
+            // if(!userr) {}
+            // if(userr.passport.passportID !== id || userr["Birth Certificate"]["Birth CertificateID"] !== id) {};
+            // console.log(files)
+            let update;
+            if(files.passport && files['Birth Certificate']) {
+
+                update = {
+                    passport: {
+                        passportID: files['passport'][0].id,
+                        path: files['passport'][0].filename
+                    },
+                    'Birth Certificate': {
+                        'Birth CertificateID': files['Birth Certificate'][0].id,
+                        path: files['Birth Certificate'][0].filename
+                    }
+                }
+            } else if(files.passport) {
+                update = {
+                    passport: {
+                        passportID: files['passport'][0].id,
+                        path: files['passport'][0].filename
+                    }
+                }
+            } else {
+                update = {
+                    'Birth Certificate': {
+                        'Birth CertificateID': files['Birth Certificate'][0].id,
+                        path: files['Birth Certificate'][0].filename
+                    }
+                }
+            }
+            // console.log(user)
+            // console.log(Object.values(user))
+            Object.assign(userr, update);
+            await userr.save();
+            // console.log(user)
+
+            const deletePrevFile = await user.deleteImage(id);
+            console.log(deletePrevFile)
+            if(deletePrevFile.status === 200) {
+
+                return {
+                    status: 200,
+                    data: { msg: 'Updated'}
+                }
+            }
+            return deletePrevFile
+
+        } catch (err) {
+            throw err
+            // next(err)
+        }
+    },
+
+    deleteImage: async (id) => {
+        if (!id || id === 'undefined') return res.status(400).send('No image ID');
+        const _id = new mongoose.Types.ObjectId(id);
+        const deleted = await gfs.delete(_id, (err) => {
+          if (err) return {
+            status: 500,
+            data: { msg: 'image deletion error', err}
+          }
+          console.log('file deleted');
+          return {
+            status: 200,
+            data: { msg: 'File deleted'}
+          }
+        });
+        return deleted;
     }
     
     // getPassport: async (res, id) => {

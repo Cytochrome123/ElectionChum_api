@@ -2,3 +2,4 @@
 .env
 forgot.js
 rough.js
+*.http
