@@ -30,7 +30,7 @@ app.use(cors({
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     credentials: true, // allow session cookie from browser to pass through
     optionsSuccessStatus: 200,
-    allowedHeaders: ['Content-Type', 'Authorization']
+    allowedHeaders: ['Content-Type', 'Authorization', 'Access-Control-Allow-Origin']
 }));    
 
 app.use(session({
