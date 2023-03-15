@@ -34,7 +34,7 @@ app.use((req, res, next) => {
 app.use(cors({
     origin: 'http://localhost:3000',
     // origin: ["http://localhost:3000", 'https://exam-mgt-server.herokuapp.com'], // allow to server to accept request from different origin
-    [Access-Control-Allow-Origin]: 'http://localhost:3000',
+    // [Access-Control-Allow-Origin]: 'http://localhost:3000',
     // methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     credentials: true, // allow session cookie from browser to pass through
