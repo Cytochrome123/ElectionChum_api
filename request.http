@@ -75,3 +75,6 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzYjY4NmI1Y
 // file
 // Pattern for votersID
 // NIN verification
+
+POST http://localhost:5000/
+content-type: application/json
