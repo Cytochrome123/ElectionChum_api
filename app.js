@@ -46,7 +46,6 @@ app.use(express.json());
 // }));  
 app.use(cors());
 
-
 app.use(session({
     secret: 'Election',
     resave: true,
