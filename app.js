@@ -43,7 +43,8 @@ app.use(express.json());
 //     credentials: true, // allow session cookie from browser to pass through
 //     optionsSuccessStatus: 200,
 //     allowedHeaders: ['Content-Type', 'Authorization', 'Access-Control-Allow-Origin']
-// }));    
+// }));  
+app.use(cors());
 
 app.use(session({
     secret: 'Election',
