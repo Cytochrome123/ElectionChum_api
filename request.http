@@ -5,9 +5,14 @@ POST http://localhost:5000/api/register
     "file"
 }
 
-POST http://localhost:4000/upload
+POST https://shy-plum-swordfish-sari.cyclic.app/api/register
 
-{ "file": "me.pdf"}
+{
+    "email": "Use",
+    "otp": "684378",
+    "votersID": "12345678",
+    "password": "12345678"
+}
 
 ### Login
 POST http://localhost:5000/api/login
