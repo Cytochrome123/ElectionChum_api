@@ -12,7 +12,7 @@ const registerValidation = [
         console.log(value)
         if(req.files['Birth Certificate'][0].mimetype === 'image/jpeg' || req.files['Birth Certificate'][0].mimetype === 'image/png') return true
         return false;
-    }).withMessage('Please upload ur passport'),
+    }).withMessage('Birth Certificate is required'),
 ];
 
 module.exports = registerValidation;
