@@ -2,7 +2,10 @@
 POST http://localhost:5000/api/register
 
 {
-    "file"
+    "password": "Use",
+    "otp": "684378",
+    "votersID": "12345678",
+    "password": "12345678"
 }
 
 POST https://shy-plum-swordfish-sari.cyclic.app/api/register

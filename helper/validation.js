@@ -1,9 +1,9 @@
-const { check } = require('express-validator');
+const { check, body } = require('express-validator');
 
 const registerValidation = [
-    // check('name', 'Name is required').not().isEmpty(),
+    check('email', 'Email is required').not().isEmpty(),
     check('password', 'Passowrd must be'),
-    check('passport').custom( ( value, {req} ) => {
+    body('passport').custom( ( value, {req} ) => {
         console.log(value)
         if(req.files.passport[0].mimetype === 'image/jpeg') return true
         return false;
