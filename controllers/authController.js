@@ -1,3 +1,4 @@
+const { validationResult } = require('express-validator');
 const { authHandler } = require('../handlers');
 
 const auth = {
@@ -15,9 +16,14 @@ const auth = {
     // need a body validation    --------------------------
     register: async (req, res, next) => {
         try {
+            const errors = validationResult(req);
+            if(!errors.isEmpty()) {
+                return res.status(400).json({ msg: errors.array()});
+            }
+            
             const userDetails = req.body;
             const files = req.files;
-            
+console.log(req.body);
             let response = await authHandler.register(next, userDetails, files);
 console.log(response)
             if(response) {

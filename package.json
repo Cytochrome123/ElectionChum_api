@@ -5,7 +5,8 @@
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon app.js"
   },
   "author": "Hud",
   "license": "ISC",
@@ -18,6 +19,7 @@
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "express-session": "^1.17.3",
+    "express-validator": "^6.15.0",
     "gridfs-stream": "^1.1.1",
     "jsonwebtoken": "^9.0.0",
     "messagebird": "^3.8.1",

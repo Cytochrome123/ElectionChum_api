@@ -3,6 +3,8 @@ const passport = require('passport');
 
 const { authController } = require('../controllers');
 const { upload, uploadMiddleware } = require('../config/gridfs');
+const { validation } = require('../helper');
+
 
 
 module.exports = () => {
@@ -10,7 +12,7 @@ module.exports = () => {
 
     router.post('/upload', upload.single('file'), authController.forgot);
 
-    router.post('/register', uploadMiddleware , authController.register);
+    router.post('/register', uploadMiddleware, validation , authController.register);
     router.post('/login', authController.login);
     router.post('/verify', passport.authenticate('jwt', { session: false }) , authController.verify)
     // router.post('/verify', authController.verify)

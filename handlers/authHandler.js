@@ -6,7 +6,7 @@ const { factory } = require('../config');
 const { User } = require('../model');
 const { cloudinary } = require('../config/cloudinary');
 // const cloudinary = require("cloudinary").v2
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 // const {gfs} = require('../db')
 // let gfs;
 
@@ -52,7 +52,7 @@ const auth = {
             // if(files.size > 5000000) {
             //     this.deleteImage()
             // }
-            console.log(userDetails)
+            // console.log(userDetails)
 
             let condition = { email: userDetails.email };
             let options = { lean: true };
