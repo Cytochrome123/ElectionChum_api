@@ -39,8 +39,6 @@ const auth = {
     // need to fix the issue of the file upload when the account is not created --- or can use delete method on gfs, let's see
     register: async (next, userDetails, files) => {
         try {
-            // const { firstName, lastName, email, password, phoneNumber, stateOfOrigin } = userDetails;
-            // files.map(file => {
                 if(files['passport'][0].size > 5000000) {
                     this.deleteImage(files['passport'][0].id);
                     return {
@@ -48,27 +46,22 @@ const auth = {
                         data: { msg: 'File shld not exceed 5mb'}
                     }
                 }
-            // })
-            // if(files.size > 5000000) {
-            //     this.deleteImage()
-            // }
-            // console.log(userDetails)
 
             let condition = { email: userDetails.email };
             let options = { lean: true };
-console.log(files)
+
             let exists = await queries.findOne(User, condition, options);
             if(!exists) {
                 userDetails.password = factory.generateHashPassword(userDetails.password);
                 userDetails['passport'] = {passportID: files['passport'][0].id};
-                userDetails['passport'] = {...userDetails.passport ,path: files['passport'][0].filename};
+                userDetails['passport'] = {...userDetails.passport, path: files['passport'][0].filename};
                 // userDetails['passport']['path'] = files['passport'][0].filename;
                 userDetails['Birth Certificate'] = { 'Birth CertificateID': files['Birth Certificate'][0].id};
                 userDetails['Birth Certificate'] ={...userDetails['Birth Certificate'] , path:  files['Birth Certificate'][0].filename};
 
                 // Save user to database
                 await queries.create(User, userDetails);
-console.log(userDetails)
+
                 return {
                     status: 200,
                     data: { msg: 'Check back in a few days to confirm if you\'re eligible to vote or not. Thanks'}
@@ -88,34 +81,31 @@ console.log(userDetails)
 
     login: async (req, res, next, userDetails) => {
         try {
-            // User.findOne({ votersID: userDetails.votersID })63b686e9a9f459c23055f106
+            
             let condition = { votersID: userDetails.votersID };
             let projection = {};
             let options = { lean: true };
             const user = await queries.findOne( User, condition, projection, options )
-            // queries.findOne( User, condition, projection, option )
-            // .then(async user => {
-                if (!user) return res.status(401).json({ msg: 'Invalid votersID'});
-                const correlates = factory.compareHashedPassword(userDetails.password, user.password);
-                if(!correlates) return res.status(401).json({ msg: 'Invalid password'});
- // *******     // if(user.status !== 'approved') return res.status(403).json({msg: 'You need to get your account approved before you can log in'})
-                // generate the OTP
-                const OTP = Math.floor(100000 + Math.random() * 900000);
-                console.log(OTP);
+            
+            if (!user) return res.status(401).json({ msg: 'Invalid votersID'});
+            const correlates = factory.compareHashedPassword(userDetails.password, user.password);
+            if(!correlates) return res.status(401).json({ msg: 'Invalid password'});
+            // generate the OTP
+            const OTP = Math.floor(100000 + Math.random() * 900000);
+            console.log(OTP);
+            console.log(user)
+            const update = { OTP };
+            options = { lean: true, new: true };
+            const updated = await queries.findOneAndUpdate( User, condition, update, options );
+            if(updated) {
+                console.log(updated)
+                //creates session and assign a token to it
+                const token = jwt.sign({ id: updated._id}, 'rubbish', {
+                    expiresIn: '1d'
+                });
 
-                console.log(user)
-                const update = { OTP };
-                options = { lean: true, new: true };
-                const updated = await queries.findOneAndUpdate( User, condition, update, options );
-                if(updated) {
-                    console.log(updated)
-                    //creates session and assign a token to it
-                    const token = jwt.sign({ id: updated._id}, 'rubbish', {
-                        expiresIn: '1d'
-                    });
-    
-                    res.status(200).json({ msg: 'check your mail or phone for an OTP sent', userDetails, token})
-                }
+                res.status(200).json({ msg: 'check your mail or phone for an OTP sent', userDetails, token})
+            }
                 
         } catch (err) {
             next(err);

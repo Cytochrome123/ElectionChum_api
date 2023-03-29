@@ -7,13 +7,5 @@ cloudinary.config({
     api_secret:process.env.CLOUDINARY_API_SECRET
 })
 
-// const storage = new cloudinaryStorage({
-//     cloudinary,
-//     params: {
-//         format
-//     }
-// })
-// console.log(cloudinary)
-// console.log('far away')
 
 module.exports = {cloudinary}

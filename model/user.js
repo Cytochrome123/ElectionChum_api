@@ -27,10 +27,6 @@ const userSchema = new mongoose.Schema({
 	OTP: String,
 	createdDate: { type: Number, default: Date.now },
 	lastLogin: { type: Number, default: null },
-	// fileId: {
-	// 	type: mongoose.Schema.Types.ObjectId,
-	// 	ref: 'Upload'
-	// }
 })
 
 // userSchema.plugin(passportLocalMongoose)

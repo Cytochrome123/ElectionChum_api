@@ -61,22 +61,6 @@ console.log(response)
         }
     },
 
-    // verify: async (req, res) => {
-    //     try {
-    //         const {otp} = req.body;
-
-    //         const response = await authHandler.verify(req, otp);
-    //         console.log(response)
-    //         if (response.msg === 'verified') {
-    //             res.redirect('/vote')
-    //         } else {
-    //             res.redirect('/api/login')
-    //         }
-    //     } catch (err) {
-    //         throw err;
-    //     }
-    // },
-
     resetPassword: async (req, res) => {
         try {
             console.log(req.session)

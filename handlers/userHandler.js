@@ -36,14 +36,6 @@ const user = {
                     { $match: {} },
                     { $group: { _id: '$party', count: { $sum: 1}}},
                     { $sort: { createdDate: -1 }},
-                    // { $project: {
-                    //     party: 1,
-                    //     userId: 1,
-                    //     firstName: 1,
-                    //     ['State of Origin']: 1,
-                    //     LGA: 1,
-                    //     residence: 1
-                    // }}
                 ];
 
                 let populateOptions = {
@@ -141,12 +133,6 @@ const user = {
     },
 
     updateFile: async (next, my_details, id, files) => {
-        /**
-         * find the user with either auth or
-         * id of the file to change
-         * update the users data with the newly updated file-- if passport, if cert.length
-         * delete the old file by id
-         */
 
         try {
             if(!files) return { status: 402, data: { msg: 'You need to upload a file'}}
@@ -154,7 +140,6 @@ const user = {
             const userr = await User.findById(my_details._id);
             // if(!userr) {}
             // if(userr.passport.passportID !== id || userr["Birth Certificate"]["Birth CertificateID"] !== id) {};
-            // console.log(files)
             let update;
             if(files.passport && files['Birth Certificate']) {
 
@@ -183,11 +168,8 @@ const user = {
                     }
                 }
             }
-            // console.log(user)
-            // console.log(Object.values(user))
             Object.assign(userr, update);
             await userr.save();
-            // console.log(user)
 
             const deletePrevFile = await user.deleteImage(id);
             console.log(deletePrevFile)
@@ -222,23 +204,6 @@ const user = {
         });
         return deleted;
     }
-    
-    // getPassport: async (res, id) => {
-    //     try {
-    //         const condition = { id: mongoose.Types.ObjectId(id) };
-    //         let projection = { id: 1, passport: 1, passportPath: 1 };
-    //         let option = { lean: true };
-
-    //         const passport = await queries.findOne( User, condition, projection, option );
-
-    //         if(passport) {
-    //             const x = `${__dirname}/${passport.passportPath}`;
-    //             res.download(x);
-    //         }
-    //     } catch (error) {
-    //         res.status(400).json(error.message)
-    //     }
-    // }
 };
 
 module.exports = user;
