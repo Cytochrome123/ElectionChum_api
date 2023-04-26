@@ -30,7 +30,7 @@ const admin = {
             const {id} = req.params;
             const payload = req.body;
 
-            const response = await adminHandler.sendReview(my_details,id, payload);
+            const response = await adminHandler.sendReview(my_details, id, payload);
 
             res.status(response.status).json(response.data);
         } catch (err) {

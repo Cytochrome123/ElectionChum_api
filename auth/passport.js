@@ -7,7 +7,9 @@ const {User} = require('../model');
 const {queries} = require('../db');
 const {factory} = require('../config');
 
+// const otpMap = new Map()
 
+// module.exports = otpMap;
 
 module.exports = (passport) => {
     passport.use(
@@ -29,6 +31,7 @@ module.exports = (passport) => {
                         }
                         let correlates = factory.compareHashedPassword(password, user.password);
                         if(correlates) {
+                            
                             return done(null, user);
                         }
                         return done(null, false, {msg: 'Incorrect password!!'});
@@ -44,6 +47,12 @@ module.exports = (passport) => {
     passport.serializeUser((user, done) => {
 		done(null, toString(user._id));
 	});
+
+    passport.deserializeUser((id, done) => {
+        User.findById(id, (err, user) => {
+          done(err, user);
+        });
+    });
 
     passport.use(
         new JwtStrategy(

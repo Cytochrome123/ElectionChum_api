@@ -3,6 +3,9 @@ const mongoose = require('mongoose');
 const { queries } = require('../db');
 const { User } = require('../model');
 
+// const sgMail = require('@sendgrid/mail')
+// sgMail.setApiKey(process.env.SENDGRID_API_KEY)
+
 
 const admin = {
     getPendingUsers: async (next, my_details) => {
@@ -80,52 +83,68 @@ const admin = {
 
     sendReview: async (my_details, id, payload) => {
         try {
-            if (my_details.userType === 'admin') {
+            // if (my_details.userType === 'admin') {
 
                 let condition = { _id: mongoose.Types.ObjectId(id) };
                 let options = { lean: true, new: true };
-                let update;
-                if (payload.status === 'approved') {
-                    // need a pattern for the votersID
-                    update = {
-                        status: payload.status,
-                        votersID: 12345678
-                    }
-                } else {
-                    update = {
-                        status: payload.status
-                    }
-                }
 
-                let updatedUser = await queries.update(User, condition, update, options);
-                console.log(updatedUser)
+                let user = await queries.findOne(User, condition);
+                console.log(condition);
+                console.log(user)
+                if(user) {
+                    console.log('innnnnn')
+                    user.status = payload.status;
+                    payload.status === 'approved' ? user.votersID = 123456789 : ''
 
-                // let mailOptions = {
-                //     to: updatedUser.email,
-                //     from: sender,
-                //     subject: 'Examiner confirmation mail',
-                //     text: `Your email id ${updatedUser.email} has been ${
-                //         updatedUser.status === 'approved'
-                //             ? `approved.Your voter's ID is ${updatedUser.votersID}`
-                //             : `declined, as ${payload.comment}`
-                //     }  Thanks`,
-                // };
+                    return await user.save()
+                    .then(async updated => {
+                        console.log(updated)
+                        let mailOptions = {
+                            to: updated.email,
+                            from: process.env.sender,
+                            subject: 'Examiner confirmation mail',
+                            text: `Your email id ${updated.email} has been ${
+                                updated.status === 'approved'
+                                    ? `approved.Your voter's ID is ${updated.votersID}`
+                                    : `declined, as ${payload.comment}`
+                            }  Thanks`,
+                        };
 
-                if (updatedUser) {
-                    return {
-                        status: 200,
-                        data: { msg: 'Your review has been made sucessfully!!!' }
-                    }
+                        return await sgMail.send(mailOptions)
+                        .then((response) => {
+                            console.log('innnnnneeerrr')
+                            return {
+                                status: 200,
+                                data: { msg: 'Your review has been made sucessfully!!!' }
+                            }
+                        })
+                        .catch((error) => {
+                            console.error(error)
+                            return {
+                                status: 400,
+                                data: { msg: error }
+                            }
+                        })
+                        
+                    })
+                    .catch( err => {
+                        return {
+                            status: 400,
+                            data: { msg: 'Your review couldn\'t complete', err }
+                        }
+                    })
+
+
                 }
-                return {
-                    status: 400,
-                    data: { msg: 'Your review couldn\'t complete' }
-                }
-            }
-            return {
-                status: 403,
-                data: { msg: 'Sign in as an admin fam' }
-            }
+                // return {
+                //     status: 400,
+                //     data: { msg: 'Selected user not found' }
+                // }
+
+            // return {
+            //     status: 403,
+            //     data: { msg: 'Sign in as an admin fam' }
+            // }
         } catch (err) {
             // throw err;
             return {

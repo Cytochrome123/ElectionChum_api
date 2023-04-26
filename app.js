@@ -6,12 +6,13 @@ const passport = require('passport');
 
 const passportLocalStrategy = require('./auth/passport');
 passportLocalStrategy(passport);
+const sgMail = require('@sendgrid/mail');
+sgMail.setApiKey(process.env.SG_API_KEY)
+// const otpMap = require('./auth/passport');
 
 const { auth, admin, user } = require('./routes');
 const db = require('./db');
 
-const sgMail = require('@sendgrid/mail')
-sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 
 const app = express();
 
@@ -71,20 +72,3 @@ app.listen(process.env.PORT || 5000, (err) => {
     if (err) console.log(err);
     else console.log('Server Connected!!!');
 });
-
-//         // Send the code via SMS using Twilio
-//         const client = new twilio(accountSid, authToken);
-//         client.messages.create({
-//             to: '+1234567890', // User's registered mobile number
-//             from: '+0987654321', // Twilio phone number
-//             body: `Your one-time code is ${oneTimeCode}`
-//         })
-//         .then(() => {
-//             // Save the one-time code and token in cache
-//             cache.set(token, oneTimeCode, 'EX', 60);
-//             res.json({status: 'success', token});
-//         })
-//         .catch(err => {
-//             console.error(err);
-//             res.status(500).json({status: 'error', message: 'Failed to send SMS'});
-//         });

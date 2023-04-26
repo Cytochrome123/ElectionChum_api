@@ -23,9 +23,9 @@ const auth = {
             
             const userDetails = req.body;
             const files = req.files;
-console.log(req.body);
+
             let response = await authHandler.register(next, userDetails, files);
-console.log(response)
+
             if(response) {
                 res.status(response.status).json(response.data);
             } else {
@@ -49,11 +49,12 @@ console.log(response)
         }
     },
 
-    verify: async (req, res, next) => {
+    verify: async (req, res) => {
         try {
             const {otp} = req.body;
+            const { votersID } = req.query;
 
-            const response = await authHandler.verify(req, res, next, otp);
+            const response = await authHandler.verify(req, res, votersID, otp);
             return response;
             
         } catch (err) {

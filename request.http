@@ -27,13 +27,13 @@ Content-Type: application/json
 }
 
 ### Verify OTP for login
-POST http://localhost:5000/api/verify
+POST http://localhost:5000/api/verify?votersID=12345678
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzYjY4NmU5YTlmNDU5YzIzMDU1ZjEwNiIsImlhdCI6MTY3ODM4NzE4NywiZXhwIjoxNjc4NDczNTg3fQ.pDViNzSBKqX6Mi5ECBnRF3Q5f_H6eyE7YFL6g3Gh3iI
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzYjY4NmU5YTlmNDU5YzIzMDU1ZjEwNiIsImlhdCI6MTY4MjUyMzE0MywiZXhwIjoxNjgyNzgyMzQzfQ.EI1uFVPaybQ5eHxUhfoVAu1cXBberAfWJKX-INrMxA4
 
 {
-    "otp": "684378",
-    "votersID": "12345678",
+    "otp": "978386",
+    "votersID": "0123",
     "password": "12345678"
 }
 
@@ -62,7 +62,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzYjY4NmU5Y
 ### Admin --- Get pending users
 GET http://localhost:5000/api/review
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzYjY4NmI1YTlmNDU5YzIzMDU1ZjEwMCIsImlhdCI6MTY3ODM4MzMwNSwiZXhwIjoxNjc4NjQyNTA1fQ.Q5ciW99taYDKLA6Riyf6ej2MVHibS79V93pHC7GI7wM
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzYjY4NmU5YTlmNDU5YzIzMDU1ZjEwNiIsImlhdCI6MTY4MDcyOTAwOCwiZXhwIjoxNjgwODE1NDA4fQ.3x9I3EO_nRAjMjTtkHRx3EsqUcwqmxZF7T5dVamoK8k
 
 
 ### Admin - Get one of the pending users and review
@@ -71,12 +71,13 @@ Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzYjY4NmI1YTlmNDU5YzIzMDU1ZjEwMCIsImlhdCI6MTY3ODM4MzMwNSwiZXhwIjoxNjc4NjQyNTA1fQ.Q5ciW99taYDKLA6Riyf6ej2MVHibS79V93pHC7GI7wM
 
 ### Review and approve the user
-PATCH http://localhost:5000/api/review/63dd7b3f0698ef8183b5f4d4
+PATCH http://localhost:5000/api/review/640dc0d43fe2a28d892f4d21
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzYjY4NmI1YTlmNDU5YzIzMDU1ZjEwMCIsImlhdCI6MTY3ODM4MzMwNSwiZXhwIjoxNjc4NjQyNTA1fQ.Q5ciW99taYDKLA6Riyf6ej2MVHibS79V93pHC7GI7wM
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzYjY4NmI1YTlmNDU5YzIzMDU1ZjEwMCIsImlhdCI6MTY4MDcyODc1NSwiZXhwIjoxNjgwOTg3OTU1fQ.DWsqiZr-6x5L7DwQxwpXCCqOtK50bjMyU3NIRNpR-jQ
 
 {
-    "status": "declined"
+    "status": "declined",
+    "comment": "you r way too young to vote, Sorry!"
 }
 
 // Mail
