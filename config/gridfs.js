@@ -8,6 +8,7 @@ const storage = new GridFsStorage({
     url: process.env.MONGO_URL,
     options: { useUnifiedTopology: true },
     file: (req, file, err) => {
+        console.log(file, 'initial')
         if(!file) return err
         return new Promise((resolve, reject) => {
             crypto.randomBytes(16, (err, buf) => {
@@ -28,7 +29,7 @@ const storage = new GridFsStorage({
   
 const upload = multer({
     storage,
-    limits: { fileSize: 20000000 },
+    // limits: { fileSize: 20000000 },
     fileFilter: (req, file, cb) => {
         checkFileType(file, cb)
     }
