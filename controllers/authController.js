@@ -23,6 +23,7 @@ const auth = {
             
             const userDetails = req.body;
             const files = req.files;
+            console.log(files)
 
             let response = await authHandler.register(next, userDetails, files);
 
@@ -62,12 +63,35 @@ const auth = {
         }
     },
 
+    forgotPassword: async (req, res, next) => {
+        try {
+            const { email } = req.body;
+            console.log(email)
+            const response = await authHandler.forgotPassword(email);
+console.log(response);
+            res.status(response.status).json(response.data);
+        } catch (err) {
+            next(err);
+        }
+    },
+
+
+    reset: async (req, res, next) => {
+        try {
+            
+        } catch (err) {
+            next(err)
+        }
+    },
+
     resetPassword: async (req, res) => {
         try {
+            const { token } = req.query;
+            console.log(req.query);
+            const { password } = req.body;
             console.log(req.session)
-            const payload = req.body;
 
-            const response = await authHandler.resetPassword(payload);
+            const response = await authHandler.resetPassword(token, password);
 
             res.status(response.status).json(response.data);
         } catch (err) {

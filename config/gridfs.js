@@ -30,19 +30,19 @@ const storage = new GridFsStorage({
 const upload = multer({
     storage,
     // limits: { fileSize: 20000000 },
-    fileFilter: (req, file, cb) => {
-        checkFileType(file, cb)
-    }
+    // fileFilter: (req, file, cb) => {
+    //     checkFileType(file, cb)
+    // }
 });
 
-function checkFileType(file, cb) {
-    // if(!file) return cb(null, false);
-    const filetypes = /jpeg|jpg|png|gif/;
-    const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-    const mimetype = filetypes.test(file.mimetype);
-    if (mimetype && extname) return cb(null, true);
-    cb('filetype');
-}
+// function checkFileType(file, cb) {
+//     // if(!file) return cb(null, false);
+//     const filetypes = /jpeg|jpg|png|gif/;
+//     const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+//     const mimetype = filetypes.test(file.mimetype);
+//     if (mimetype && extname) return cb(null, true);
+//     cb('filetype');
+// }
 
 const uploadMiddleware = (req, res, next) => {
     const store = upload.fields([{name: 'passport', maxCount: 1}, {name: 'Birth Certificate', maxCount: 1}]);
