@@ -27,11 +27,11 @@ const auth = {
 
             let response = await authHandler.register(next, userDetails, files);
 
-            if(response) {
+            // if(response) {
                 res.status(response.status).json(response.data);
-            } else {
-                res.status(500).json({msg: ''});
-            }
+            // } else {
+            //     res.status(500).json({msg: ''});
+            // }
             
         } catch (err) {
             // throw err;
