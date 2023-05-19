@@ -110,27 +110,27 @@ const admin = {
                             }  Thanks`,
                         };
 
-                        return await sgMail.send(mailOptions)
-                        .then((response) => {
-                            console.log('innnnnneeerrr')
-                            return {
-                                status: 200,
-                                data: { msg: 'Your review has been made sucessfully!!!' }
-                            }
-                        })
-                        .catch((error) => {
-                            console.error(error)
-                            return {
-                                status: 400,
-                                data: { msg: error }
-                            }
-                        })
+                        // return await sgMail.send(mailOptions)
+                        // .then((response) => {
+                        //     console.log('innnnnneeerrr')
+                        //     return {
+                        //         status: 200,
+                        //         data: { msg: 'Your review has been made sucessfully!!!' }
+                        //     }
+                        // })
+                        // .catch((error) => {
+                        //     console.error(error)
+                        //     return {
+                        //         status: 400,
+                        //         data: { msg: error }
+                        //     }
+                        // })
                         
                     })
                     .catch( err => {
                         return {
                             status: 400,
-                            data: { msg: 'Your review couldn\'t complete', err }
+                            data: { msg: 'Your review couldn\'t complete, you need to pick a', err }
                         }
                     })
 
