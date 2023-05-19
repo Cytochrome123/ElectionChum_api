@@ -96,7 +96,7 @@ const admin = {
                     user.status = payload.status;
                     payload.status === 'approved' ? user.votersID = 123456789 : ''
 
-                    return await user.save()
+                    await user.save()
                     .then(async updated => {
                         console.log(updated)
                         let mailOptions = {
@@ -110,21 +110,21 @@ const admin = {
                             }  Thanks`,
                         };
 
-                        // return await sgMail.send(mailOptions)
-                        // .then((response) => {
-                        //     console.log('innnnnneeerrr')
-                        //     return {
-                        //         status: 200,
-                        //         data: { msg: 'Your review has been made sucessfully!!!' }
-                        //     }
-                        // })
-                        // .catch((error) => {
-                        //     console.error(error)
-                        //     return {
-                        //         status: 400,
-                        //         data: { msg: error }
-                        //     }
-                        // })
+                        await sgMail.send(mailOptions)
+                        .then((response) => {
+                            console.log('innnnnneeerrr')
+                            return {
+                                status: 200,
+                                data: { msg: 'Your review has been made sucessfully!!!' }
+                            }
+                        })
+                        .catch((error) => {
+                            console.error(error)
+                            return {
+                                status: 400,
+                                data: { msg: error }
+                            }
+                        })
                         
                     })
                     .catch( err => {
