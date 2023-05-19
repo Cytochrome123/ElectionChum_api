@@ -92,7 +92,7 @@ const user = {
 
     getFile: async (res, id) => {
         try {
-            console.log(gfs)
+            console.log(gfs, 'gfs')
             // res.redirect('http://res.cloudinary.com/iceece/image/upload/v1672908699/passport/mnifb7zvxh3p6mfyqjus.png');
 
             gfs.find({_id: mongoose.Types.ObjectId(id)}).toArray((err, file) => {
@@ -102,7 +102,7 @@ const user = {
                     message: 'File not found'
                   });
                 }
-                console.log(file);
+                console.log(file, 'file');
                 // const readstream = gfs.createReadStream(file.filename);
                 // readstream.pipe(res);
             
@@ -114,6 +114,9 @@ const user = {
                 });
             
                 downloadStream.pipe(res);
+                // const fin = downloadStream.pipe(res);
+                // console.log(typeof(fin))
+                // res.status(200).json({msg: JSON.stringify(fin)});
             });
 
 
@@ -128,7 +131,7 @@ const user = {
             
             // })
         } catch (error) {
-            res.status(400).json(error.message)
+            res.status(400).json(error)
         }
     },
 
