@@ -96,13 +96,13 @@ const admin = {
                     user.status = payload.status;
                     payload.status === 'approved' ? user.votersID = 123456789 : ''
 
-                    await user.save()
+                    return await user.save()
                     .then(async updated => {
                         console.log(updated)
                         let mailOptions = {
                             to: updated.email,
                             from: process.env.sender,
-                            subject: 'Examiner confirmation mail',
+                            subject: 'Confirmation mail',
                             text: `Your email id ${updated.email} has been ${
                                 updated.status === 'approved'
                                     ? `approved.Your voter's ID is ${updated.votersID}`
@@ -110,21 +110,26 @@ const admin = {
                             }  Thanks`,
                         };
 
-                        await sgMail.send(mailOptions)
-                        .then((response) => {
-                            console.log('innnnnneeerrr')
-                            return {
-                                status: 200,
-                                data: { msg: 'Your review has been made sucessfully!!!' }
-                            }
-                        })
-                        .catch((error) => {
-                            console.error(error)
-                            return {
-                                status: 400,
-                                data: { msg: error }
-                            }
-                        })
+                        // await sgMail.send(mailOptions)
+                        // .then((response) => {
+                        //     console.log('innnnnneeerrr')
+                        //     return {
+                        //         status: 200,
+                        //         data: { msg: 'Your review has been made sucessfully!!!' }
+                        //     }
+                        // })
+                        // .catch((error) => {
+                        //     console.error(error)
+                        //     return {
+                        //         status: 400,
+                        //         data: { msg: error }
+                        //     }
+                        // })
+
+                        return {
+                            status: 200,
+                            data: { msg: 'Your review has been made sucessfully!!!' }
+                        }
                         
                     })
                     .catch( err => {
