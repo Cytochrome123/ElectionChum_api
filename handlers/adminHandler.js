@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const { queries } = require('../db');
 const { User } = require('../model');
 
-// const sgMail = require('@sendgrid/mail')
+const sgMail = require('@sendgrid/mail')
 // sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 
 
@@ -110,26 +110,21 @@ const admin = {
                             }  Thanks`,
                         };
 
-                        // await sgMail.send(mailOptions)
-                        // .then((response) => {
-                        //     console.log('innnnnneeerrr')
-                        //     return {
-                        //         status: 200,
-                        //         data: { msg: 'Your review has been made sucessfully!!!' }
-                        //     }
-                        // })
-                        // .catch((error) => {
-                        //     console.error(error)
-                        //     return {
-                        //         status: 400,
-                        //         data: { msg: error }
-                        //     }
-                        // })
-
-                        return {
-                            status: 200,
-                            data: { msg: 'Your review has been made sucessfully!!!' }
-                        }
+                        return await sgMail.send(mailOptions)
+                        .then((response) => {
+                            console.log('innnnnneeerrr')
+                            return {
+                                status: 200,
+                                data: { msg: 'Your review has been made sucessfully!!!' }
+                            }
+                        })
+                        .catch((error) => {
+                            console.error(error)
+                            return {
+                                status: 400,
+                                data: { msg: error }
+                            }
+                        })
                         
                     })
                     .catch( err => {
