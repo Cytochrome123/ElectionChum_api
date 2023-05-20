@@ -6,19 +6,34 @@ const { cloudinary } = require('../config/cloudinary');
 
 let gfs;
 
-const conn = mongoose.createConnection(process.env.MONGO_URL, {
-	useNewUrlParser: true,
-	useUnifiedTopology: true,
-	// useCreateIndex: true,
+// const conn = mongoose.createConnection(process.env.MONGO_URL, {
+// 	useNewUrlParser: true,
+// 	useUnifiedTopology: true,
+// 	// useCreateIndex: true,
+// });
+
+// conn.once('open', () => {
+//     gfs = new mongoose.mongo.GridFSBucket(conn.db, {
+// 		bucketName: 'uploads',
+// 	});
+// 	console.log('GFS up!!!')
+// })
+
+mongoose.connect(process.env.MONGO_URL, (err, conn) => {
+	if (err) {
+		console.log('Mongo error ', err);
+	} else {
+		// conn.once('open', () => {
+		// 	gfs = Grid(conn.db, mongoose.mongo);
+		// 	gfs.collection('uploads')
+		// })
+		let db = mongoose.connections[0].db;
+		gfs = new mongoose.mongo.GridFSBucket(db, {
+			bucketName: 'uploads'
+		})
+		console.log('Mongoose Connection is Successful');
+	}
 });
-
-conn.once('open', () => {
-    gfs = new mongoose.mongo.GridFSBucket(conn.db, {
-		bucketName: 'uploads',
-	});
-	console.log('GFS up!!!')
-})
-
 
 const user = {
     getDashboard: async (my_details, next) => {
@@ -95,28 +110,40 @@ const user = {
             console.log(gfs, 'gfs')
             // res.redirect('http://res.cloudinary.com/iceece/image/upload/v1672908699/passport/mnifb7zvxh3p6mfyqjus.png');
 
-            gfs.find({_id: mongoose.Types.ObjectId(id)}).toArray((err, file) => {
-                if (!id || id === 'undefined') return res.status(400).send('No ID');
-                if (!file || file.length === 0) {
-                  return res.status(404).json({
-                    message: 'File not found'
-                  });
+            gfs.find({filename: 'f72cfe5dac4824f2406e478ebbd880ae.jpg'}).toArray((err, file) => {
+                if(err) {
+                    res.status(400).json({msg: err.message});
+                } else {
+                    // console.log(file, 'file')
+                    // if(file || file.length == 0) {
+                    //     res.status(202).json({msg: 'file doe not exist'});
+                    // } else {
+                        console.log(res)
+                        gfs.openDownloadStreamByName('f72cfe5dac4824f2406e478ebbd880ae.jpg').pipe(res)
+                    // }
                 }
-                console.log(file, 'file');
-                // const readstream = gfs.createReadStream(file.filename);
-                // readstream.pipe(res);
+                // if (!id || id === 'undefined') return res.status(400).send('No ID');
+                // if (!file || file.length === 0) {
+                //   return res.status(404).json({
+                //     message: 'File not found'
+                //   });
+                // }
+                // console.log(file, 'file');
+                // // const readstream = gfs.createReadStream(file.filename);
+                // // readstream.pipe(res);
             
-                const downloadStream = gfs.openDownloadStream(new mongoose.Types.ObjectId(id))
+                // const downloadStream = gfs.openDownloadStream(new mongoose.Types.ObjectId(id))
             
-                downloadStream.on('error', (error) => {
-                  console.log('Error downloading file:', error);
-                  res.sendStatus(404);
-                });
+                // downloadStream.on('error', (error) => {
+                //   console.log('Error downloading file:', error);
+                //   res.sendStatus(404);
+                // });
             
-                downloadStream.pipe(res);
+                // downloadStream.pipe(res);
+
                 // const fin = downloadStream.pipe(res);
                 // console.log(typeof(fin))
-                // res.status(200).json({msg: JSON.stringify(fin)});
+                // res.status(200).json({msg: 'Image loaded'});
             });
 
 
