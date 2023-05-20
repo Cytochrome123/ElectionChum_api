@@ -301,7 +301,7 @@ const auth = {
             // let pass = factory.compareHashedPassword(password, user.tempPassword);
 
             // Update user's password
-            user.password = password;
+            user.password = factory.generateHashPassword(password);
             user.resetToken = undefined;
             user.resetTokenExpiration = undefined;
             await user.save();
