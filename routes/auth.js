@@ -18,8 +18,8 @@ module.exports = () => {
     // router.post('/verify', authController.verify)
     router.post('/forgot-password', authController.forgotPassword);
     router.route('/reset-password')
-    .get(authController.reset)
-    .post(authController.resetPassword);
+    // .get(authController.reset)
+    .get(authController.resetPassword);
     router.post('/sendOTP', authController.sendOTP);
     router.post('/verifyOTP', authController.verifyOTP);
     return router;

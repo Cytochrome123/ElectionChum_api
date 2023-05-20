@@ -203,7 +203,7 @@ const auth = {
         }
     },
 
-    forgotPassword: async (email) => {
+    forgotPassword: async (email, password) => {
         try {
 
             // Find user by email
@@ -222,15 +222,18 @@ const auth = {
             // Update user's reset token and expiration date
             user.resetToken = resetToken;
             user.resetTokenExpiration = resetTokenExpiration;
+            // const hashed = factory.generateHashPassword(password);
+            // const hashed2 = crypto.createHmac('sha256', '12345').update(password).digest('hex')
+            // user.tempPassword = hashed2;
             await user.save();
-
+            
             // Send password reset email using SendGrid
-            const resetLink = `https://shy-plum-swordfish-sari.cyclic.app/api/reset-password?token=${resetToken}`;
+            const resetLink = `https://shy-plum-swordfish-sari.cyclic.app/api/reset-password?token=${resetToken}&password=${password}`;   
             const msg = {
                 to: user.email,
                 from: process.env.sender,
                 subject: 'Password reset request',
-                text: `Hello ${user.name},\n\nYou have requested a password reset for your account. To reset your password, please click the following link:\n\n${resetLink}\n\nThis link will expire in 1 hour.\n\nIf you did not request this password reset, please ignore this email.\n\nThanks,\nThe Example Team`,
+                text: `Hello ${user.firstName},\n\nYou have requested a password reset for your account. To reset your password, please click the following link:\n\n${resetLink}\n\nThis link will expire in 1 hour.\n\nIf you did not request this password reset, please ignore this email.\n\nThanks,\nThe Example Team`,
             };
             await sgMail.send(msg);
 
@@ -294,6 +297,8 @@ const auth = {
                     data: { msg: 'Invalid or expired reset token' }
                 }
             }
+
+            // let pass = factory.compareHashedPassword(password, user.tempPassword);
 
             // Update user's password
             user.password = password;

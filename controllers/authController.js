@@ -65,9 +65,9 @@ const auth = {
 
     forgotPassword: async (req, res, next) => {
         try {
-            const { email } = req.body;
+            const { email, password } = req.body;
             console.log(email)
-            const response = await authHandler.forgotPassword(email);
+            const response = await authHandler.forgotPassword(email, password);
 console.log(response);
             res.status(response.status).json(response.data);
         } catch (err) {
@@ -80,10 +80,10 @@ console.log(response);
         try {
             const { token } = req.query;
             console.log(req.query);
-            // const { password } = req.body;
+            const { password } = req.body;
             console.log(req.session)
 
-            const response = await authHandler.reset(token);
+            const response = await authHandler.reset(token, password);
 
             res.status(response.status).json(response.data);
         } catch (err) {
@@ -93,8 +93,8 @@ console.log(response);
 
     resetPassword: async (req, res, next) => {
         try {
-            const {token} = req.query;
-            const {password} = req.body;
+            const {token, password} = req.query;
+            // const {password} = req.body;
 
             const response = await authHandler.resetPassword(token, password);
 
