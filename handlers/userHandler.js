@@ -118,7 +118,7 @@ const user = {
                     // if(file || file.length == 0) {
                     //     res.status(202).json({msg: 'file doe not exist'});
                     // } else {
-                        console.log(res)
+                        // console.log(res)
                         gfs.openDownloadStreamByName('f72cfe5dac4824f2406e478ebbd880ae.jpg').pipe(res)
                     // }
                 }
