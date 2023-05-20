@@ -76,26 +76,31 @@ console.log(response);
     },
 
 
-    reset: async (req, res, next) => {
-        try {
-            
-        } catch (err) {
-            next(err)
-        }
-    },
-
-    resetPassword: async (req, res) => {
+    reset: async (req, res) => {
         try {
             const { token } = req.query;
             console.log(req.query);
-            const { password } = req.body;
+            // const { password } = req.body;
             console.log(req.session)
+
+            const response = await authHandler.reset(token);
+
+            res.status(response.status).json(response.data);
+        } catch (err) {
+            res.status(err.status).json(err.message);
+        }
+    },
+
+    resetPassword: async (req, res, next) => {
+        try {
+            const {token} = req.query;
+            const {password} = req.body;
 
             const response = await authHandler.resetPassword(token, password);
 
             res.status(response.status).json(response.data);
         } catch (err) {
-            res.status(err.status).json(err.message);
+            next(err)
         }
     },
 

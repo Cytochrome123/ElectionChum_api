@@ -203,44 +203,153 @@ const auth = {
         }
     },
 
-
-    resetPassword: async (payload) => {
+    forgotPassword: async (email) => {
         try {
-            let condition = { email: payload.email };
-            let projection = {};
-            let options = { lean: true };
 
-            let user = await queries.findOne(User, condition, projection, options);
-
-            if (user) {
-                payload.password = factory.generateHashPassword(userDetails.password);
-
-                let update = { password: payload.password };
-                options = { lean: true, new: true };
-
-                let newPassword = await queries.findOneAndUpdate(User, condition, update, options);
-                if (newPassword) {
-                    return {
-                        status: 200,
-                        data: { msg: 'Your password has been updated successfully' }
-                    }
-                }
+            // Find user by email
+            const user = await User.findOne({ email });
+            if (!user) {
                 return {
                     status: 400,
-                    data: { msg: 'Eeror pls try back later' }
+                    data: { msg: 'No user found with that email' }
                 }
             }
+
+            // Generate reset token and expiration date
+            const resetToken = crypto.randomBytes(20).toString('hex');
+            const resetTokenExpiration = Date.now() + 3600000; // 1 hour
+
+            // Update user's reset token and expiration date
+            user.resetToken = resetToken;
+            user.resetTokenExpiration = resetTokenExpiration;
+            await user.save();
+
+            // Send password reset email using SendGrid
+            const resetLink = `https://shy-plum-swordfish-sari.cyclic.app/api/reset-password?token=${resetToken}`;
+            const msg = {
+                to: user.email,
+                from: process.env.sender,
+                subject: 'Password reset request',
+                text: `Hello ${user.name},\n\nYou have requested a password reset for your account. To reset your password, please click the following link:\n\n${resetLink}\n\nThis link will expire in 1 hour.\n\nIf you did not request this password reset, please ignore this email.\n\nThanks,\nThe Example Team`,
+            };
+            await sgMail.send(msg);
+
             return {
-                status: 400,
-                data: { msg: 'This email doesn\'nt exists' }
+                status: 200,
+                data: { msg: 'Password reset email sent' }
             }
-        } catch (error) {
+
+        } catch (err) {
             return {
                 status: 400,
-                data: { msg: error.message }
+                data: { err}
             }
         }
     },
+
+    reset : async (token) => {
+        try {
+            // Find user by reset token
+            const user = await User.findOne({
+                resetToken: token,
+                resetTokenExpiration: { $gt: Date.now() },
+            });
+
+            // If no user is found with the reset token, or the token has expired, return an error response
+            if (!user) {
+                return {
+                    status: 400,
+                    data: { msg: 'Invalid or expired reset token' }
+                }
+            }
+
+            // Update user's password
+            // user.password = password;
+            // user.resetToken = undefined;
+            // user.resetTokenExpiration = undefined;
+            // await user.save();
+
+            return {
+                status: 202,
+                data: { msg: 'Authorized' }
+            }
+        } catch (err) {
+            return {
+                status: 400,
+                data: { err}
+            }
+        }
+    },
+
+    resetPassword: async (token, password) => {
+        try {
+            const user = await User.findOne({
+                resetToken: token,
+                resetTokenExpiration: { $gt: Date.now() },
+            });
+
+            if (!user) {
+                return {
+                    status: 400,
+                    data: { msg: 'Invalid or expired reset token' }
+                }
+            }
+
+            // Update user's password
+            user.password = password;
+            user.resetToken = undefined;
+            user.resetTokenExpiration = undefined;
+            await user.save();
+
+            return {
+                status: 200,
+                data: { msg: 'Password reset sucessful' }
+            }
+        } catch (err) {
+            return {
+                status: 400,
+                data: { err}
+            }
+        }
+    },
+    
+    // resetPassword: async (payload) => {
+    //     try {
+    //         let condition = { email: payload.email };
+    //         let projection = {};
+    //         let options = { lean: true };
+
+    //         let user = await queries.findOne(User, condition, projection, options);
+
+    //         if (user) {
+    //             payload.password = factory.generateHashPassword(userDetails.password);
+
+    //             let update = { password: payload.password };
+    //             options = { lean: true, new: true };
+
+    //             let newPassword = await queries.findOneAndUpdate(User, condition, update, options);
+    //             if (newPassword) {
+    //                 return {
+    //                     status: 200,
+    //                     data: { msg: 'Your password has been updated successfully' }
+    //                 }
+    //             }
+    //             return {
+    //                 status: 400,
+    //                 data: { msg: 'Eeror pls try back later' }
+    //             }
+    //         }
+    //         return {
+    //             status: 400,
+    //             data: { msg: 'This email doesn\'nt exists' }
+    //         }
+    //     } catch (error) {
+    //         return {
+    //             status: 400,
+    //             data: { msg: error.message }
+    //         }
+    //     }
+    // },
 
     sendOTP: async (userData) => {
         try {

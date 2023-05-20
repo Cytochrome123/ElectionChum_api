@@ -48,7 +48,7 @@ const uploadMiddleware = (req, res, next) => {
     const store = upload.fields([{name: 'passport', maxCount: 1}, {name: 'Birth Certificate', maxCount: 1}]);
     store(req, res, (err) => {
         if (err instanceof multer.MulterError) {
-            return res.status(400).send('File too large');
+            return res.status(400).send(err);
         } else if (err) {
             if (err === 'filetype') return res.status(400).send('Image files only');
             return res.sendStatus(500);

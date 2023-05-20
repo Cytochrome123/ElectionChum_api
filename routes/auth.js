@@ -16,7 +16,10 @@ module.exports = () => {
     router.post('/login', authController.login);
     router.post('/verify', passport.authenticate('jwt', { session: false }) , authController.verify)
     // router.post('/verify', authController.verify)
-    router.post('/forgotpassword', authController.resetPassword);
+    router.post('/forgot-password', authController.forgotPassword);
+    router.route('/reset-password')
+    .get(authController.reset)
+    .post(authController.resetPassword);
     router.post('/sendOTP', authController.sendOTP);
     router.post('/verifyOTP', authController.verifyOTP);
     return router;
