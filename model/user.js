@@ -25,6 +25,9 @@ const userSchema = new mongoose.Schema({
 		path: String,
 	},
 	OTP: String,
+	resetToken: String,
+	resetTokenExpiration: String,
+	// tempPassword: String,
 	createdDate: { type: Number, default: Date.now },
 	lastLogin: { type: Number, default: null },
 })
