@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const { queries } = require('../db');
 const { User } = require('../model');
 
-const sgMail = require('@sendgrid/mail')
+const sgMail = require('@sendgrid/mail');
 // sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 
 
@@ -83,7 +83,7 @@ const admin = {
 
     sendReview: async (my_details, id, payload) => {
         try {
-            // if (my_details.userType === 'admin') {
+            if (my_details.userType === 'admin') {
 
                 let condition = { _id: mongoose.Types.ObjectId(id) };
                 let options = { lean: true, new: true };
@@ -95,56 +95,63 @@ const admin = {
                     console.log('innnnnn')
                     user.status = payload.status;
                     payload.status === 'approved' ? user.votersID = 123456789 : ''
+                    if(payload.status === 'approved') {
+                        user.votersID = 123456789;
+                        return await user.save()
+                        .then(async updated => {
+                            console.log(updated)
+                            let mailOptions = {
+                                to: updated.email,
+                                from: process.env.sender,
+                                subject: 'Confirmation mail',
+                                text: `Your email id ${updated.email} has been ${
+                                    updated.status === 'approved'
+                                        ? `approved.Your voter's ID is ${updated.votersID}`
+                                        : `declined, as ${payload.comment}`
+                                }  Thanks`,
+                            };
 
-                    return await user.save()
-                    .then(async updated => {
-                        console.log(updated)
-                        let mailOptions = {
-                            to: updated.email,
-                            from: process.env.sender,
-                            subject: 'Confirmation mail',
-                            text: `Your email id ${updated.email} has been ${
-                                updated.status === 'approved'
-                                    ? `approved.Your voter's ID is ${updated.votersID}`
-                                    : `declined, as ${payload.comment}`
-                            }  Thanks`,
-                        };
-
-                        return await sgMail.send(mailOptions)
-                        .then((response) => {
-                            console.log('innnnnneeerrr')
-                            return {
-                                status: 200,
-                                data: { msg: 'Your review has been made sucessfully!!!' }
-                            }
+                            return await sgMail.send(mailOptions)
+                            .then((response) => {
+                                console.log('innnnnneeerrr')
+                                return {
+                                    status: 200,
+                                    data: { msg: 'Your review has been made sucessfully!!!' }
+                                }
+                            })
+                            .catch((error) => {
+                                console.error(error)
+                                return {
+                                    status: 400,
+                                    data: { msg: error }
+                                }
+                            })
+                            
                         })
-                        .catch((error) => {
-                            console.error(error)
+                        .catch( err => {
                             return {
                                 status: 400,
-                                data: { msg: error }
+                                data: { msg: 'Your review couldn\'t complete, you need to pick a', err }
                             }
                         })
-                        
-                    })
-                    .catch( err => {
+                    } else {
+                        await queries.delete(User, condition)
                         return {
-                            status: 400,
-                            data: { msg: 'Your review couldn\'t complete, you need to pick a', err }
+                            status: 200,
+                            data: { msg: 'Your review has been made sucessfully and the user has been deleted from the database' }
                         }
-                    })
-
+                    }
 
                 }
-                // return {
-                //     status: 400,
-                //     data: { msg: 'Selected user not found' }
-                // }
-
-            // return {
-            //     status: 403,
-            //     data: { msg: 'Sign in as an admin fam' }
-            // }
+                return {
+                    status: 400,
+                    data: { msg: 'Selected user not found' }
+                }
+            }
+            return {
+                status: 403,
+                data: { msg: 'You\'ve got to be an admin to access this!!! ' }
+            }
         } catch (err) {
             // throw err;
             return {
