@@ -93,9 +93,9 @@ const admin = {
                 console.log(user)
                 if(user) {
                     console.log('innnnnn')
-                    user.status = payload.status;
-                    payload.status === 'approved' ? user.votersID = 123456789 : ''
+                    // payload.status === 'approved' ? user.votersID = 123456789 : ''
                     if(payload.status === 'approved') {
+                        user.status = payload.status;
                         user.votersID = 123456789;
                         return await user.save()
                         .then(async updated => {
@@ -104,11 +104,8 @@ const admin = {
                                 to: updated.email,
                                 from: process.env.sender,
                                 subject: 'Confirmation mail',
-                                text: `Your email id ${updated.email} has been ${
-                                    updated.status === 'approved'
-                                        ? `approved.Your voter's ID is ${updated.votersID}`
-                                        : `declined, as ${payload.comment}`
-                                }  Thanks`,
+                                text: `Your email id ${updated.email} has been 
+                                        approved.Your voter's ID is ${updated.votersID}. Thanks`,
                             };
 
                             return await sgMail.send(mailOptions)
@@ -136,6 +133,13 @@ const admin = {
                         })
                     } else {
                         await queries.delete(User, condition)
+                        let mailOptions = {
+                            to: updated.email,
+                            from: process.env.sender,
+                            subject: 'Confirmation mail',
+                            text: `Your registration has been dissaproved, as ${payload.comment}. Thanks`,
+                        };
+                        await sgMail.send(mailOptions)
                         return {
                             status: 200,
                             data: { msg: 'Your review has been made sucessfully and the user has been deleted from the database' }
