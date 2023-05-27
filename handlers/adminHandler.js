@@ -95,8 +95,9 @@ const admin = {
                     console.log('innnnnn')
                     // payload.status === 'approved' ? user.votersID = 123456789 : ''
                     if(payload.status === 'approved') {
+                        const random = Math.floor(100000 + Math.random() * 900000);
                         user.status = payload.status;
-                        user.votersID = 123456789;
+                        user.votersID = `${random}${user['State of Origin'].slice(0, 3).toUpperCase()}`
                         return await user.save()
                         .then(async updated => {
                             console.log(updated)
