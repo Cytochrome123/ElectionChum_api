@@ -135,7 +135,7 @@ const admin = {
                     } else {
                         await queries.delete(User, condition)
                         let mailOptions = {
-                            to: updated.email,
+                            to: user.email,
                             from: process.env.sender,
                             subject: 'Confirmation mail',
                             text: `Your registration has been dissaproved, as ${payload.comment}. Thanks`,
