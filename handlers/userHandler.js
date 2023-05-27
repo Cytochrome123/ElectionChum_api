@@ -45,7 +45,7 @@ const user = {
 
             const voted = await queries.findOne( Vote, condition, projection, option );
 
-            if(voted) {
+            if(voted || my_details.userType === 'admin') {
                 // GET ALL VOTES
                 let pipeline = [
                     { $match: {} },
@@ -57,13 +57,20 @@ const user = {
                     path: 'userId',
                     select: 'firstName',
                 }
-                const votes = await queries.aggregateDataAndPopulate(Vote, pipeline, populateOptions);
+                const votesByParty = await queries.aggregateDataAndPopulate(Vote, pipeline, populateOptions);
 
-                // const count = await queries.countDocuments( Vote, pipeline[0].$match );
+                pipeline = [
+                    { $match: {} },
+                    { $group: { _id: '$state', count: { $sum: 1}}},
+                    { $sort: { createdDate: -1 }},
+                ];
+                
+                const votesByState = await queries.aggregateDataAndPopulate(Vote, pipeline, populateOptions);
 
+                const totalVotes = await queries.countDocuments( Vote, pipeline[0].$match );
                 return {
                     status: 200,
-                    data: { votes }
+                    data: { totalVotes, votesByParty, votesByState }
                 }
             } else {
                 return {
@@ -98,10 +105,11 @@ const user = {
                     data: { msg: 'Invalid party' }
                 }
             }
-            
+
             let voteObj = {
                 userId: my_details._id,
-                party: voteDetails.party
+                party: voteDetails.party,
+                state: my_details['State of Origin']
             }
             await queries.create( Vote, voteObj );
 
