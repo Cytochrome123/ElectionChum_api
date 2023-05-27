@@ -90,6 +90,15 @@ const user = {
                     data: { msg: 'You can only vote once!' }
                 }
             }
+            let parties = [ 'NPC', 'YAP', 'APPA', 'CP', 'NNPC' ]
+
+            if(!parties.includes(voteDetails.party)) {
+                return {
+                    status: 400,
+                    data: { msg: 'Invalid party' }
+                }
+            }
+            
             let voteObj = {
                 userId: my_details._id,
                 party: voteDetails.party

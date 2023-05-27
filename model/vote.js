@@ -7,7 +7,7 @@ const voteSchema = new mongoose.Schema({
 		required: true,
 		ref: 'User',
 	},
-    party: { type: String, required: true },
+    party: { type: String, required: true, enum: [ 'NPC', 'YAP', 'APPA', 'CP', 'NNPC' ] },
 	createdDate: { type: Number, default: Date.now },
 })
 
