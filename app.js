@@ -12,6 +12,7 @@ sgMail.setApiKey(process.env.SG_API_KEY)
 
 const { auth, admin, user } = require('./routes');
 const db = require('./db');
+console.log(db)
 
 
 const app = express();
@@ -40,33 +41,10 @@ app.use('/api', auth());
 app.use('/api', admin());
 app.use('/api', user());
 
-
-// MAil test
-
-app.post('/', async (req, res, next) => {
-  try {
-    const msg = {
-      to: 'hoismail1430@gmail.com', // Change to your recipient
-      from: 'hoismail2017@gmail.com', // Change to your verified sender
-      subject: 'Sending with SendGrid is Fun',
-      // text: 'and easy to do anywhere, even with Node.js',
-      html: '<strong>and easy to do anywhere, even with Node.js</strong>',
-    }
-    
-    await sgMail
-      .send(msg)
-      .then((response) => {
-        console.log(response[0].statusCode)
-        console.log(response[0].headers)
-      })
-      .catch((error) => {
-        console.error(error)
-      })
-  } catch(e) {
-    next(e)
-  }
-})
-
+app.use((err, req, res, next) => {
+  // Handle the error
+  res.status(500).json({ error: err.message });
+});
 
 app.listen(process.env.PORT || 5000, (err) => {
     if (err) console.log(err);
