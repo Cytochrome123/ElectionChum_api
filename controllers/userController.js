@@ -25,6 +25,17 @@ const user = {
         }
     },
 
+    getProfile: async (req, res, next) => {
+        try {
+            const my_details = req.user;
+
+            const response = await userHandler.getProfile(my_details);
+            res.status(response.status).json(response.data);
+        } catch (err) {
+            next(err);
+        }
+    },
+
     getFile: async (req, res, next) => {
         try {
             const {id} = req.params;

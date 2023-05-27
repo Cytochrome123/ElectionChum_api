@@ -13,7 +13,7 @@ module.exports = () => {
     // router.get('/passport/:id', userController.getPassport);
     // router.get('/birth-certificate/:id', userController.getCertificate);
 
-    router.get('/profile');
+    router.get('/profile', passport.authenticate('jwt'), userController.getProfile);
     router.route('/file/:id')
     .get(userController.getFile)
     .patch(passport.authenticate('jwt'), uploadMiddleware, userController.updateFile);    

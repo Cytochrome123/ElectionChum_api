@@ -105,6 +105,25 @@ const user = {
         }
     },
 
+    getProfile: async (my_details) => {
+        try {
+            let condition = { email: my_details.email };
+            let projection = { password: 0, OTP: 0, resetToken: 0, resetTokenExpiration: 0, createdDate: 0, lastLogin: 0 };
+            let option = { lean: true };
+
+            let profile = await queries.findOne( User, condition, projection, option);
+            return {
+                status: 200,
+                data: { profile }
+            }
+        } catch (err) {
+            return {
+                status: 400,
+                data: { msg: err.message }
+            }
+        }
+    },
+
     getFile: async (res, id) => {
         try {
             console.log(gfs, 'gfs')
