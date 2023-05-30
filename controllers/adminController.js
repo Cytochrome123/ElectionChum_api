@@ -36,6 +36,17 @@ const admin = {
         } catch (err) {
             next(err)
         }
+    },
+
+    getUsersWithVotersID: async (req, res, next) => {
+        try {
+            const my_details = req.user;
+
+            const response = await adminHandler.getUsersWithVotersID(my_details);
+            res.status(response.status).json(response.data);
+        } catch (err) {
+            res.status(err.status).json(err.data);
+        }
     }
 }
 

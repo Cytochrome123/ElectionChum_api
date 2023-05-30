@@ -164,7 +164,41 @@ const admin = {
                 data: { msg: err.message }
             }
         }
-    }
-}
+    },
 
+    getUsersWithVotersID: async (my_details) => {
+        try {
+            if(my_details.userType === 'admin') {
+                let condition = {votersID: { $ne: null}};
+                let projections = {
+                    password: 0,
+                    status: 0,
+                    OTP: 0,
+                    resetToken: 0,
+                    resetTokenExpiration: 0,
+                }
+                let options = {
+                    lean: true,
+                    sort: { createdDate: -1 }
+                };
+
+                let users = await queries.find(User, condition, projections, options);
+
+                return {
+                    status: 200,
+                    data: users
+                }
+            }
+            return {
+                status: 400,
+                data: 'You need to be an admin to access this'
+            }
+        } catch (err) {
+            return {
+                status: 400,
+                data: err.msg
+            }
+        }
+    },
+}
 module.exports = admin;
