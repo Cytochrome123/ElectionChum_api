@@ -98,6 +98,7 @@ const user = {
                 }
             }
             let parties = [ 'NPC', 'YAP', 'APPA', 'CP', 'NNPC' ]
+            console.log(voteDetails, 'vD')
 
             if(!parties.includes(voteDetails.party)) {
                 return {
