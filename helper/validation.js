@@ -10,12 +10,12 @@ const registerValidation = [
         if(req.files.passport) return true
         return false;
     }).withMessage('Please upload ur passport'),
-    check('Birth Certificate').custom( ( value, {req} ) => {
+    check('certificate').custom( ( value, {req} ) => {
         console.log(value)
-        // if(req.files['Birth Certificate'][0].mimetype === 'image/jpeg' || req.files['Birth Certificate'][0].mimetype === 'image/png') return true
-        if(req.files['Birth Certificate']) return true
+        // if(req.files['certificate'][0].mimetype === 'image/jpeg' || req.files['certificate'][0].mimetype === 'image/png') return true
+        if(req.files['certificate']) return true
         return false;
-    }).withMessage('Birth Certificate is required'),
+    }).withMessage('certificate is required'),
 ];
 
 module.exports = registerValidation;
