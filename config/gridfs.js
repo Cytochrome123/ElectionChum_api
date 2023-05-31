@@ -18,9 +18,10 @@ const storage = new GridFsStorage({
             const filename = buf.toString('hex') + path.extname(file.originalname);
             const fileInfo = {
                 filename: filename,
+                // filename: file.originalname,
                 bucketName: 'uploads'
             };
-            // console.log(fileInfo)
+            console.log(fileInfo)
             resolve(fileInfo);
             });
         });
@@ -45,7 +46,7 @@ const upload = multer({
 // }
 
 const uploadMiddleware = (req, res, next) => {
-    const store = upload.fields([{name: 'passport', maxCount: 1}, {name: 'Birth Certificate', maxCount: 1}]);
+    const store = upload.fields([{name: 'passport', maxCount: 1}, {name: 'certificate', maxCount: 1}]);
     store(req, res, (err) => {
         if (err instanceof multer.MulterError) {
             return res.status(400).send(err);

@@ -20,8 +20,8 @@ const userSchema = new mongoose.Schema({
 		passportID: { type: String, default: null },
 		path: String,
 	},
-	'Birth Certificate': {
-		['Birth CertificateID']: { type: String, required: true },
+	'certificate': {
+		['certificateID']: { type: String, required: true },
 		path: String,
 	},
 	OTP: String,

@@ -27,6 +27,11 @@ conn.once('open', () => {
     console.log('GFS up!!!')
 })
 
+// let db = mongoose.connections[0].db;
+// gfs = new mongoose.mongo.GridFSBucket(db, {
+//     bucketName: 'uploads',
+// })
+
 const otpMap = new Map()
 
 const auth = {
@@ -60,8 +65,8 @@ const auth = {
                 userDetails['passport'] = { passportID: files['passport'][0].id };
                 userDetails['passport'] = { ...userDetails.passport, path: files['passport'][0].filename };
                 // userDetails['passport']['path'] = files['passport'][0].filename;
-                userDetails['Birth Certificate'] = { 'Birth CertificateID': files['Birth Certificate'][0].id };
-                userDetails['Birth Certificate'] = { ...userDetails['Birth Certificate'], path: files['Birth Certificate'][0].filename };
+                userDetails['certificate'] = { 'certificate': files['certificate'][0].id };
+                userDetails['certificate'] = { ...userDetails['certificate'], path: files['certificate'][0].filename };
 
                 // Save user to database
                 await queries.create(User, userDetails);
@@ -72,7 +77,7 @@ const auth = {
                 }
             }
             auth.deleteImage(files['passport'][0].id);
-            auth.deleteImage(files['Birth Certificate'][0].id)
+            auth.deleteImage(files['certificate'][0].id)
             return {
                 status: 401,
                 data: { msg: 'Account already exists' }
@@ -119,37 +124,14 @@ const auth = {
                     });
 
 
-                // req.login(user, async (err) => {
-                //     if (err) throw err;
-                //     const userObj = {
-                //         firstName: user.firstName,
-                //         lastName: user.lastName,
-                //         email: user.email,
-                //         phoneNumber: user.phoneNumber,
-                //         ['State of Origin']: user['State of Origin'],
-                //         LGA: user.LGA,
-                //         residence: user.residence,
-                //         votersID: user.votersID,
-                //         userType: user.userType,
-                //         passport: user.passport,
-                //         passportPath: user.passportPath,
-                //     };
-
                 const token = jwt.sign({ id: user._id }, 'rubbish', {
                     expiresIn: '1d'
                 });
 
-                // user.lastLogin = new Date();
-                // await user.save()
-
-                // const update = { lastLogin: new Date(), OTP };
-                // options = { lean: true, new: true };
-                // await queries.findOneAndUpdate( User, condition, update, options );
-                // res.status(200).json({ token: newToken, userObj })
+            
                 console.log(req.user)
                 res.status(200).json({ msg: 'check your mail or phone for an OTP sent', token, votersID: user.votersID })
-                // res.status(200).json({userObj, token})
-                // });
+               
             })(req, res, next)
         } catch (err) {
             throw err
@@ -222,9 +204,7 @@ const auth = {
             // Update user's reset token and expiration date
             user.resetToken = resetToken;
             user.resetTokenExpiration = resetTokenExpiration;
-            // const hashed = factory.generateHashPassword(password);
-            // const hashed2 = crypto.createHmac('sha256', '12345').update(password).digest('hex')
-            // user.tempPassword = hashed2;
+            
             await user.save();
             
             // Send password reset email using SendGrid
@@ -318,43 +298,6 @@ const auth = {
         }
     },
     
-    // resetPassword: async (payload) => {
-    //     try {
-    //         let condition = { email: payload.email };
-    //         let projection = {};
-    //         let options = { lean: true };
-
-    //         let user = await queries.findOne(User, condition, projection, options);
-
-    //         if (user) {
-    //             payload.password = factory.generateHashPassword(userDetails.password);
-
-    //             let update = { password: payload.password };
-    //             options = { lean: true, new: true };
-
-    //             let newPassword = await queries.findOneAndUpdate(User, condition, update, options);
-    //             if (newPassword) {
-    //                 return {
-    //                     status: 200,
-    //                     data: { msg: 'Your password has been updated successfully' }
-    //                 }
-    //             }
-    //             return {
-    //                 status: 400,
-    //                 data: { msg: 'Eeror pls try back later' }
-    //             }
-    //         }
-    //         return {
-    //             status: 400,
-    //             data: { msg: 'This email doesn\'nt exists' }
-    //         }
-    //     } catch (error) {
-    //         return {
-    //             status: 400,
-    //             data: { msg: error.message }
-    //         }
-    //     }
-    // },
 
     sendOTP: async (userData) => {
         try {
