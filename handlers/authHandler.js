@@ -65,7 +65,7 @@ const auth = {
                 userDetails['passport'] = { passportID: files['passport'][0].id };
                 userDetails['passport'] = { ...userDetails.passport, path: files['passport'][0].filename };
                 // userDetails['passport']['path'] = files['passport'][0].filename;
-                userDetails['certificate'] = { 'certificate': files['certificate'][0].id };
+                userDetails['certificate'] = { 'certificateID': files['certificate'][0].id };
                 userDetails['certificate'] = { ...userDetails['certificate'], path: files['certificate'][0].filename };
 
                 // Save user to database
