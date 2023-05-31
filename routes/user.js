@@ -14,7 +14,7 @@ module.exports = () => {
     // router.get('/birth-certificate/:id', userController.getCertificate);
 
     router.get('/profile', passport.authenticate('jwt'), userController.getProfile);
-    router.route('/file/:id')
+    router.route('/file/:filename')
     .get(userController.getFile)
     .patch(passport.authenticate('jwt'), uploadMiddleware, userController.updateFile);    
     

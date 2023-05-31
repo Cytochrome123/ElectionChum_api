@@ -142,12 +142,13 @@ const user = {
         }
     },
 
-    getFile: async (res, id) => {
+    getFile: async (res, filename) => {
         try {
             console.log(gfs, 'gfs')
             // res.redirect('http://res.cloudinary.com/iceece/image/upload/v1672908699/passport/mnifb7zvxh3p6mfyqjus.png');
 
-            gfs.find({filename: 'f72cfe5dac4824f2406e478ebbd880ae.jpg'}).toArray((err, file) => {
+            gfs.find({filename: filename}).toArray((err, file) => {
+            // gfs.find({id: mongoose.Types.ObjectId('64733ad54fe946bd2e5b14d5')}).toArray((err,file) => {
                 if(err) {
                     res.status(400).json({msg: err.message});
                 } else {
@@ -156,8 +157,11 @@ const user = {
                     //     res.status(202).json({msg: 'file doe not exist'});
                     // } else {
                         // console.log(res)
-                        res.set("Content-Type", 'image/jpeg')
-                        gfs.openDownloadStreamByName('f72cfe5dac4824f2406e478ebbd880ae.jpg').pipe(res)
+                        console.log(file)
+                        const type = file[0].contentType
+                        res.set("Content-Type", type)
+                        gfs.openDownloadStreamByName(filename).pipe(res)
+                        // gfs.openDownloadStream().pipe(res)
                     // }
                 }
                 // if (!id || id === 'undefined') return res.status(400).send('No ID');

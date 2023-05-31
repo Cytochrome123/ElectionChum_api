@@ -38,9 +38,10 @@ const user = {
 
     getFile: async (req, res, next) => {
         try {
-            const {id} = req.params;
+            const {filename} = req.params;
+            console.log(typeof(filename))
 
-            const response = userHandler.getFile(res, id);
+            const response = userHandler.getFile(res, filename);
             return response;
         } catch (error) {
             next(err)
