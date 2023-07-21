@@ -9,9 +9,6 @@ module.exports = () => {
 
     router.get('/', passport.authenticate('jwt'), userController.getDashboard);
     router.post('/vote', passport.authenticate('jwt'), userController.vote);
-    // router.get('/vote', userController.getAllVote)
-    // router.get('/passport/:id', userController.getPassport);
-    // router.get('/birth-certificate/:id', userController.getCertificate);
 
     router.get('/profile', passport.authenticate('jwt'), userController.getProfile);
     router.route('/file/:filename')

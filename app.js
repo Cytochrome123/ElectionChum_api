@@ -8,7 +8,6 @@ const passportLocalStrategy = require('./auth/passport');
 passportLocalStrategy(passport);
 const sgMail = require('@sendgrid/mail');
 sgMail.setApiKey(process.env.SG_API_KEY)
-// const otpMap = require('./auth/passport');
 
 const { auth, admin, user } = require('./routes');
 const db = require('./db');

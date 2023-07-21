@@ -7,9 +7,6 @@ const {User} = require('../model');
 const {queries} = require('../db');
 const {factory} = require('../config');
 
-// const otpMap = new Map()
-
-// module.exports = otpMap;
 
 module.exports = (passport) => {
     passport.use(
@@ -62,7 +59,6 @@ module.exports = (passport) => {
     
             },
             async (jwtPayload, done) => {
-                // let query = { _id: mongoose.Types.ObjectId(jwtPayload.userId) };
                 let query = { _id: mongoose.Types.ObjectId(jwtPayload.id) };
                 console.log(query)
     
@@ -74,7 +70,7 @@ module.exports = (passport) => {
                     projections,
                     options
                 );
-                // if (user && user.userType === jwtPayload.role) {
+                
                 if (user) {
                     // req.user = user
                     return done(null, user);

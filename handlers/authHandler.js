@@ -5,12 +5,9 @@ const { queries } = require('../db');
 const { factory } = require('../config');
 const { User } = require('../model');
 const { cloudinary } = require('../config/cloudinary');
-// const cloudinary = require("cloudinary").v2
 const mongoose = require('mongoose');
 const sgMail = require('@sendgrid/mail')
-// const otpMap = require('../auth/passport');
-// const {gfs} = require('../db')
-// let gfs;
+
 
 let gfs;
 
@@ -27,10 +24,7 @@ conn.once('open', () => {
     console.log('GFS up!!!')
 })
 
-// let db = mongoose.connections[0].db;
-// gfs = new mongoose.mongo.GridFSBucket(db, {
-//     bucketName: 'uploads',
-// })
+
 
 const otpMap = new Map()
 
@@ -230,7 +224,7 @@ const auth = {
         }
     },
 
-    reset : async (token) => {
+    reset: async (token) => {
         try {
             // Find user by reset token
             const user = await User.findOne({
@@ -245,12 +239,6 @@ const auth = {
                     data: { msg: 'Invalid or expired reset token' }
                 }
             }
-
-            // Update user's password
-            // user.password = password;
-            // user.resetToken = undefined;
-            // user.resetTokenExpiration = undefined;
-            // await user.save();
 
             return {
                 status: 202,

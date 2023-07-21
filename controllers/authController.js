@@ -24,7 +24,6 @@ const auth = {
             const userDetails = req.body;
             const files = req.files;
             console.log(files)
-            // console.log({passportID: files['passport'][0].buffer}, 'userDetails')
 
 
             let response = await authHandler.register(next, userDetails, files);

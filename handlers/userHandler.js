@@ -6,18 +6,6 @@ const { cloudinary } = require('../config/cloudinary');
 
 let gfs;
 
-// const conn = mongoose.createConnection(process.env.MONGO_URL, {
-// 	useNewUrlParser: true,
-// 	useUnifiedTopology: true,
-// 	// useCreateIndex: true,
-// });
-
-// conn.once('open', () => {
-//     gfs = new mongoose.mongo.GridFSBucket(conn.db, {
-// 		bucketName: 'uploads',
-// 	});
-// 	console.log('GFS up!!!')
-// })
 
 mongoose.connect(process.env.MONGO_URL, (err, conn) => {
 	if (err) {
@@ -144,61 +132,22 @@ const user = {
 
     getFile: async (res, filename) => {
         try {
-            console.log(gfs, 'gfs')
+            // console.log(gfs, 'gfs')
             // res.redirect('http://res.cloudinary.com/iceece/image/upload/v1672908699/passport/mnifb7zvxh3p6mfyqjus.png');
 
             gfs.find({filename: filename}).toArray((err, file) => {
-            // gfs.find({id: mongoose.Types.ObjectId('64733ad54fe946bd2e5b14d5')}).toArray((err,file) => {
                 if(err) {
                     res.status(400).json({msg: err.message});
                 } else {
-                    // console.log(file, 'file')
-                    // if(file || file.length == 0) {
-                    //     res.status(202).json({msg: 'file doe not exist'});
-                    // } else {
-                        // console.log(res)
-                        console.log(file)
-                        const type = file[0].contentType
-                        res.set("Content-Type", type)
-                        gfs.openDownloadStreamByName(filename).pipe(res)
-                        // gfs.openDownloadStream().pipe(res)
-                    // }
+                    
+                    console.log(file)
+                    const type = file[0].contentType
+                    res.set("Content-Type", type)
+                    gfs.openDownloadStreamByName(filename).pipe(res)
                 }
-                // if (!id || id === 'undefined') return res.status(400).send('No ID');
-                // if (!file || file.length === 0) {
-                //   return res.status(404).json({
-                //     message: 'File not found'
-                //   });
-                // }
-                // console.log(file, 'file');
-                // // const readstream = gfs.createReadStream(file.filename);
-                // // readstream.pipe(res);
-            
-                // const downloadStream = gfs.openDownloadStream(new mongoose.Types.ObjectId(id))
-            
-                // downloadStream.on('error', (error) => {
-                //   console.log('Error downloading file:', error);
-                //   res.sendStatus(404);
-                // });
-            
-                // downloadStream.pipe(res);
-
-                // const fin = downloadStream.pipe(res);
-                // console.log(typeof(fin))
-                // res.status(200).json({msg: 'Image loaded'});
+                
             });
 
-
-            // gfs.files.findOne({_id: mongoose.Types.ObjectId(req.params.id)}, (err, file) => {
-            //     if (!file || file.length === 0) {
-            //       return res.status(404).json({
-            //         message: 'File not found'
-            //       });
-            //     }
-            //     const readstream = gfs.createReadStream(file.filename);
-            //     readstream.pipe(res);
-            
-            // })
         } catch (error) {
             res.status(400).json(error)
         }
@@ -210,8 +159,7 @@ const user = {
             if(!files) return { status: 402, data: { msg: 'You need to upload a file'}}
 
             const userr = await User.findById(my_details._id);
-            // if(!userr) {}
-            // if(userr.passport.passportID !== id || userr["Birth Certificate"]["Birth CertificateID"] !== id) {};
+            
             let update;
             if(files.passport && files['Birth Certificate']) {
 
